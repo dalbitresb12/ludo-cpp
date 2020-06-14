@@ -1,0 +1,48 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Microsoft C++: Build active file",
+			"command": "vsdevcmd && cl.exe",
+			"args": [
+				"/clr",
+				"/Fe",
+				"/I",
+				"${workspaceFolder}\\includes\\",
+				"/Fo${workspaceFolder}\\build\\obj\\",
+				"${file}",
+				"/link",
+				"user32.lib",
+				"/out:${workspaceFolder}\\build\\${fileBasenameNoExtension}.exe"
+			],
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "Microsoft C++: Build main project file",
+			"command": "vsdevcmd && cl.exe",
+			"args": [
+				"/clr",
+				"/Fe",
+				"/I",
+				"${workspaceFolder}\\includes\\",
+				"/Fo${workspaceFolder}\\build\\obj\\",
+				"${workspaceFolder}\\main.cpp",
+				"/link",
+				"user32.lib",
+				"/out:${workspaceFolder}\\build\\main.exe"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}\\includes"
+			},
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		}
+	]
+}

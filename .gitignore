@@ -35,8 +35,8 @@
 *.out
 *.app
 
-# VS Code
-.vscode/
+# VS Code Workspace
+*.code-workspace
 
 # Builds
 build/
