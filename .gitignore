@@ -38,8 +38,5 @@
 # VS Code
 .vscode/
 
-# Tests
-tests/
-
 # Builds
 build/
