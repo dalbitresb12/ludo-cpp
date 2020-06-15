@@ -13,7 +13,7 @@ using namespace System;
 
 /**
  * Menu Module
- * This contains the entire logic for the main menu
+ * This has the entire logic for the main menu
  */
 namespace Menu {
     namespace Print {
@@ -66,6 +66,9 @@ namespace Menu {
         return selection.second - 10;
     }
 
+    /**
+     * Instructions sub-menu
+     */
     void Instructions() {
         vector<string> texts = {
             "===== REGLAS DEL JUEGO =====",
@@ -81,6 +84,9 @@ namespace Menu {
         Utils::WaitEscape();
     }
 
+    /**
+     * Credits sub-menu
+     */
     void Credits() {
         vector<string> texts = {
             "===== CRÉDITOS =====",
