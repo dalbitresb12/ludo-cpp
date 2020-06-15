@@ -47,7 +47,10 @@ namespace Menu {
             "( ) Iniciar partida",
             "( ) Instrucciones  ",
             "( ) Creditos       ",
-            "( ) Salir          "
+            "( ) Salir          ",
+            "",
+            "Use las flechas arriba y abajo para seleccionar",
+            " Presione Enter para seleccionar la opción marcada"
         };
         pair<int, int> ini = make_pair((Console::WindowWidth / 2 - ((texts[1].length() / 2))), 11);
         pair<int, int> min = make_pair(((Console::WindowWidth / 2) - ((texts[1].length() / 2))) - 1, 10);
