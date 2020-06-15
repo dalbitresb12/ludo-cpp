@@ -48,4 +48,4 @@ Trabajo final de fin de curso de Programación I de la carrera de Ingeniería de
 
 ## Licencia 📄
 
-Este proyecto está bajo la Licencia **GNU General Public License v3.0** - mira el archivo [LICENSE.md](LICENSE.md) para más detalles.
+Este proyecto está bajo la Licencia **GNU General Public License v3.0** - mira el archivo [LICENSE](LICENSE) para más detalles.
