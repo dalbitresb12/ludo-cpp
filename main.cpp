@@ -21,8 +21,8 @@
 #include <menu.h>
 #include <game.h>
 
-#define CONSOLE_WIDTH 85
-#define CONSOLE_HEIGHT 34
+#define CONSOLE_WIDTH 120
+#define CONSOLE_HEIGHT 40
 
 using namespace std;
 using namespace System;
@@ -47,6 +47,9 @@ int main() {
         int option = Menu::Main();
 
         switch (option) {
+            case 1:
+                Game::Start();
+                break;
             case 2: 
                 Menu::Instructions();
                 break;

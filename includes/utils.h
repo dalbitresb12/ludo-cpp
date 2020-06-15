@@ -38,14 +38,16 @@ namespace Utils {
      * @param {pair<int, int>} initial
      * @param {pair<int, int>} min
      * @param {pair<int, int>} max
+     * @param {bool} [esc = false]
      * @return {pair<int, int>} current
      */
-    pair<int, int> Selection(char c, pair<int, int> initial, pair<int, int> min, pair<int, int> max) {
+    pair<int, int> Selection(char c, pair<int, int> initial, pair<int, int> min, pair<int, int> max, bool esc = false) {
         int ARRIBA = 72;
         int ABAJO = 80;
         int IZQUIERDA = 75;
         int DERECHA = 77;
         int ENTER = 13;
+        int ESCAPE = 27;
 
         int x = initial.first, y = initial.second;
         char key;
@@ -78,6 +80,9 @@ namespace Utils {
             }
             if (key == ENTER) {
                 return make_pair(x, y);
+            }
+            if (esc && key == ESCAPE) {
+                return make_pair(0, 0);
             }
             Console::SetCursorPosition(x, y);
             cout << c;

@@ -49,9 +49,9 @@ namespace Menu {
             "( ) Creditos       ",
             "( ) Salir          "
         };
-        pair<int, int> ini = make_pair((Console::WindowWidth / 2 - ((texts[1].length() / 2) - 1)), 11);
-        pair<int, int> min = make_pair(((Console::WindowWidth / 2) - ((texts[1].length() / 2) - 1)) - 1, 10);
-        pair<int, int> max = make_pair(((Console::WindowWidth / 2) - ((texts[4].length() / 2) - 1)) + 1, 15);
+        pair<int, int> ini = make_pair((Console::WindowWidth / 2 - ((texts[1].length() / 2))), 11);
+        pair<int, int> min = make_pair(((Console::WindowWidth / 2) - ((texts[1].length() / 2))) - 1, 10);
+        pair<int, int> max = make_pair(((Console::WindowWidth / 2) - ((texts[4].length() / 2))) + 1, 15);
 
         Utils::ClearScreen();
         Menu::Print::Logo();
