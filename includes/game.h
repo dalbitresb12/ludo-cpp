@@ -32,13 +32,13 @@ namespace Game {
         {ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed},
         {ConsoleColor::White, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White},
         {ConsoleColor::White, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::White},
-        {ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Magenta, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::White},
-        {ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::White, ConsoleColor::Magenta, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue},
-        {ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::White, ConsoleColor::Magenta, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue},
-        {ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::White, ConsoleColor::Magenta, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue},
-        {ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::White, ConsoleColor::Magenta, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue},
-        {ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue},
-        {ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::Magenta, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue},
+        {ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::White},
+        {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue},
+        {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue},
+        {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue},
+        {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue},
+        {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue},
+        {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue},
     };
 
     /**
@@ -50,7 +50,7 @@ namespace Game {
          */
         void Board() {
             for (int i = 0; i < 15; i++) {
-                for (int j = 0; j < 15; j++){
+                for (int j = 0; j < 15; j++) {
                     Console::BackgroundColor = BoardColors[i][j];
                     for (int k = 0; k < 2; k++) {
                         for (int l = 0; l < 5; l++) {
@@ -58,6 +58,7 @@ namespace Game {
                             cout << " ";
                         }
                     }
+                    Console::ResetColor();
                 }
             }
         }
@@ -128,9 +129,11 @@ namespace Game {
                 if (key == DEL && name.length() > 0) {
                     name.pop_back();
                 } else if (key == ENTER) {
-                    playerNames[i] = name;
-                    name = "";
-                    break;
+                    if (name.length() > 0) {
+                        playerNames[i] = name;
+                        name = "";
+                        break;
+                    }
                 } else {
                     if (name.length() <= 20) {
                         name.push_back(key);
@@ -142,17 +145,20 @@ namespace Game {
 
     /**
      * Game util to print a player based on coords and
-     * keeping original background colors from board.
+     * keeping original background colors from board
      * 
      * @param {pair<int, int>} &playerCoords
+     * @param {ConsoleColor} [playerColor = ConsoleColor::Black]
      */
-    void SetPlayerPosition(pair<int, int> &playerCoords) {
+    void SetPlayerPosition(pair<int, int> &playerCoords, ConsoleColor playerColor = ConsoleColor::Black) {
         int x = (5 * playerCoords.first) + 2;
         int y = 2 * playerCoords.second;
+        Console::BackgroundColor = BoardColors[playerCoords.second - 1][playerCoords.first - 1];
+        Console::ForegroundColor = playerColor;
         Console::SetCursorPosition(x, y);
-        Console::BackgroundColor = BoardColors[playerCoords.second][playerCoords.first];
-        Console::ForegroundColor = ConsoleColor::Black;
-        cout << '*';
+        cout << 'O';
+        Console::SetCursorPosition(x, y + 1);
+        cout << '^';
         Console::ResetColor();
     }
 
@@ -183,9 +189,16 @@ namespace Game {
 
         // Variables definition
         // Two-dimension array for player coords
-        array<array<pair<int, int>, 4>, 4> playerCoords;
+        pair<int, int> playerCoords[4][4] = {
+            { make_pair(3, 3), make_pair(4, 3), make_pair(3, 4), make_pair(4, 4) },
+            { make_pair(12, 3), make_pair(13, 3), make_pair(12, 4), make_pair(13, 4) },
+            { make_pair(3, 12), make_pair(4, 12), make_pair(3, 13), make_pair(4, 13) },
+            { make_pair(12, 12), make_pair(13, 12), make_pair(12, 13), make_pair(13, 13) }
+        };
         // Array to store player names
         array<string, 4> playerNames;
+        // Array for player colors
+        array<ConsoleColor, 4> playerColors = { ConsoleColor::Green, ConsoleColor::DarkRed, ConsoleColor::DarkYellow, ConsoleColor::Blue };
 
         // Get number of players
         int players = GetPlayers();
@@ -196,9 +209,17 @@ namespace Game {
         GetPlayerNames(playerNames, players);
         LoadingScreen(players);
 
+        // Clear everything before printing board
         Utils::ClearScreen();
         Print::Board();
-        SetPlayerPosition(make_pair(2, 7));
-        // To be continued...
+
+        // Print initial player positions
+        for (int i = 0; i < players; i++) {
+            for (int j = 0; j < 4; j++) {
+                SetPlayerPosition(playerCoords[i][j], playerColors[i]);
+            }
+        }
+
+        _getch();
     }
 }
