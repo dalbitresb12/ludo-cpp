@@ -103,6 +103,10 @@ namespace Utils {
         }
     }
 
+    bool CheckIfChar(char key, char c) {
+        return (int)c == (int)key;
+    }
+
     /**
      * Get a random number between min and max
      * 
@@ -112,6 +116,14 @@ namespace Utils {
      */
     int GetRandomNumber(int min, int max) {
         return rand() % max + min;
+    }
+
+    /**
+     * Sort an array or vector of pairs by first element
+     * of pair using sort() in descending order
+     */
+    bool SortInRev(pair<int, int> &a, pair<int, int> &b) {
+        return a.first > b.first;
     }
 
     /**
@@ -134,7 +146,7 @@ namespace Utils {
          * @param {vector<string>} t
          * @param {bool} [center = false]
          */
-        void StringVector(vector<string> t, bool center = false) {
+        void StringVector(vector<string> &t, bool center = false) {
             for (int i = 0; i < size(t); i++) {
                 if (center) Print::Centered(t[i]);
                 else cout << t[i] << "\n";
