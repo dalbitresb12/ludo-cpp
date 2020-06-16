@@ -40,6 +40,7 @@ Trabajo final de fin de curso de Programación I de la carrera de Ingeniería de
 ## Documentación de apoyo 📚
 
 - [Microsoft C++, C, and Assembler documentation](https://docs.microsoft.com/en-us/cpp/?view=vs-2019)
+- [C++ Reference](https://www.cplusplus.com/reference/)
 
 ## Autores ✒️
 
