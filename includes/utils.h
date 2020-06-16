@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <windows.h>
+#include <conio.h>
 
 using namespace std;
 using namespace System;
