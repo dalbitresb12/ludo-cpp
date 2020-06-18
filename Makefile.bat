@@ -58,24 +58,24 @@ exit 0
 
 :CHECKSUMS
 set UNMATCH=false
-set MAIN_MD5=643c0b391b8b2dc1d17cfabb4676a11a
-set DICEH_MD5=89dfcdf596ffd2af97708d7c368eb10e
-set GAMEH_MD5=47abe520524ce0b0ee7be1b305034145
-set MENUH_MD5=1c0c7631d71985f27e1610e621aedcad
-set UTILSH_MD5=acd1c4ac26d55eee9eb6edad95fbca1c
+set MAIN_SHA1=c8ecf05a7dd5832e434c371c3c745cd700b00cbc
+set DICEH_SHA1=ac3ec90a445fe6cc253d4ad01f013c162ca7d431
+set GAMEH_SHA1=ea1aeddd626a639eb7604375dbe98532e814de7c
+set MENUH_SHA1=6a8722e71fbdf8b2b570c5a42d074171f606c7c4
+set UTILSH_SHA1=ea35ea1409e242defe420626e56631a9c347e398
 
 echo INFO: Checking project integrity...
 
 echo INFO: Testing main.cpp...
 set "CHECK_TEST=" & for /F "skip=1 delims=" %%H in ('
-    2^> nul CertUtil -hashfile main.cpp MD5
+    2^> nul CertUtil -hashfile main.cpp
 ') do if not defined CHECK_TEST set "CHECK_TEST=%%H"
 
 if "%CHECK_TEST%"=="" (
     echo WARN: Could not check hashes on main.cpp
     echo WARN: Continuing anyways
 ) else (
-    if "%MAIN_MD5%"=="%CHECK_TEST%" (
+    if "%MAIN_SHA1%"=="%CHECK_TEST%" (
         echo SUCCESS: main.cpp hashes match
     ) else (
         set UNMATCH=true
@@ -85,14 +85,14 @@ if "%CHECK_TEST%"=="" (
 
 echo INFO: Testing includes\dice.h...
 set "CHECK_TEST=" & for /F "skip=1 delims=" %%H in ('
-    2^> nul CertUtil -hashfile includes\dice.h MD5
+    2^> nul CertUtil -hashfile includes\dice.h
 ') do if not defined CHECK_TEST set "CHECK_TEST=%%H"
 
 if "%CHECK_TEST%"=="" (
     echo WARN: Could not check hashes on includes\dice.h
     echo WARN: Continuing anyways
 ) else (
-    if "%DICEH_MD5%"=="%CHECK_TEST%" (
+    if "%DICEH_SHA1%"=="%CHECK_TEST%" (
         echo SUCCESS: includes\dice.h hashes match
     ) else (
         set UNMATCH=true
@@ -102,14 +102,14 @@ if "%CHECK_TEST%"=="" (
 
 echo INFO: Testing includes\game.h...
 set "CHECK_TEST=" & for /F "skip=1 delims=" %%H in ('
-    2^> nul CertUtil -hashfile includes\game.h MD5
+    2^> nul CertUtil -hashfile includes\game.h
 ') do if not defined CHECK_TEST set "CHECK_TEST=%%H"
 
 if "%CHECK_TEST%"=="" (
     echo WARN: Could not check hashes on includes\game.h
     echo WARN: Continuing anyways
 ) else (
-    if "%GAMEH_MD5%"=="%CHECK_TEST%" (
+    if "%GAMEH_SHA1%"=="%CHECK_TEST%" (
         echo SUCCESS: includes\game.h hashes match
     ) else (
         set UNMATCH=true
@@ -119,14 +119,14 @@ if "%CHECK_TEST%"=="" (
 
 echo INFO: Testing includes\menu.h...
 set "CHECK_TEST=" & for /F "skip=1 delims=" %%H in ('
-    2^> nul CertUtil -hashfile includes\menu.h MD5
+    2^> nul CertUtil -hashfile includes\menu.h
 ') do if not defined CHECK_TEST set "CHECK_TEST=%%H"
 
 if "%CHECK_TEST%"=="" (
     echo WARN: Could not check hashes on includes\menu.h
     echo WARN: Continuing anyways
 ) else (
-    if "%MENUH_MD5%"=="%CHECK_TEST%" (
+    if "%MENUH_SHA1%"=="%CHECK_TEST%" (
         echo SUCCESS: includes\menu.h hashes match
     ) else (
         set UNMATCH=true
@@ -136,14 +136,14 @@ if "%CHECK_TEST%"=="" (
 
 echo INFO: Testing includes\utils.h...
 set "CHECK_TEST=" & for /F "skip=1 delims=" %%H in ('
-    2^> nul CertUtil -hashfile includes\utils.h MD5
+    2^> nul CertUtil -hashfile includes\utils.h
 ') do if not defined CHECK_TEST set "CHECK_TEST=%%H"
 
 if "%CHECK_TEST%"=="" (
     echo WARN: Could not check hashes on includes\utils.h
     echo WARN: Continuing anyways
 ) else (
-    if "%UTILSH_MD5%"=="%CHECK_TEST%" (
+    if "%UTILSH_SHA1%"=="%CHECK_TEST%" (
         echo SUCCESS: includes\utils.h hashes match
     ) else (
         set UNMATCH=true
