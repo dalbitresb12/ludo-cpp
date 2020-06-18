@@ -32,7 +32,7 @@ namespace Game {
         {ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed},
         {ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed},
         {ConsoleColor::White, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Gray, ConsoleColor::DarkRed, ConsoleColor::Gray, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White},
-        {ConsoleColor::White, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::White},
+        {ConsoleColor::White, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Gray, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::White},
         {ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Gray, ConsoleColor::DarkYellow, ConsoleColor::Gray, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::White},
         {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue},
         {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue},
@@ -40,6 +40,66 @@ namespace Game {
         {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue},
         {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue},
         {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue},
+    };
+
+    pair<pair<int, int>, pair<int,int>> Movements[88] = {
+    make_pair(make_pair(6, 0), make_pair(7, 0)),
+    make_pair(make_pair(6, 1), make_pair(6, 0)),
+    make_pair(make_pair(6, 2), make_pair(6, 1)),
+    make_pair(make_pair(6, 3), make_pair(6, 2)),
+    make_pair(make_pair(6, 4), make_pair(6, 3)),
+    make_pair(make_pair(6, 5), make_pair(6, 4)),
+    make_pair(make_pair(6, 9), make_pair(5, 8)),
+    make_pair(make_pair(6, 10), make_pair(6, 9)),
+    make_pair(make_pair(6, 11), make_pair(6, 10)),
+    make_pair(make_pair(6, 12), make_pair(6, 11)),
+    make_pair(make_pair(6, 13), make_pair(6, 12)),
+    make_pair(make_pair(6, 14), make_pair(6, 13)),
+    make_pair(make_pair(7, 9), make_pair(7, 8)),
+    make_pair(make_pair(7, 10), make_pair(7, 9)),
+    make_pair(make_pair(7, 11), make_pair(7, 10)),
+    make_pair(make_pair(7, 12), make_pair(7, 11)),
+    make_pair(make_pair(7, 13), make_pair(7, 12)),
+    make_pair(make_pair(7, 14), make_pair(6, 14)),
+    make_pair(make_pair(7, 0), make_pair(8, 0)),
+    make_pair(make_pair(7, 1), make_pair(7, 2)),
+    make_pair(make_pair(7, 2), make_pair(7, 3)),
+    make_pair(make_pair(7, 3), make_pair(7, 4)),
+    make_pair(make_pair(7, 4), make_pair(7, 5)),
+    make_pair(make_pair(7, 5), make_pair(7, 6)),
+    make_pair(make_pair(8, 0), make_pair(8, 1)),
+    make_pair(make_pair(8, 1), make_pair(8, 2)),
+    make_pair(make_pair(8, 2), make_pair(8, 3)),
+    make_pair(make_pair(8, 3), make_pair(8, 4)),
+    make_pair(make_pair(8, 4), make_pair(8, 5)),
+    make_pair(make_pair(8, 5), make_pair(9, 6)),
+    make_pair(make_pair(8, 9), make_pair(8, 10)),
+    make_pair(make_pair(8, 10), make_pair(8, 11)),
+    make_pair(make_pair(8, 11), make_pair(8, 12)),
+    make_pair(make_pair(8, 12), make_pair(8, 13)),
+    make_pair(make_pair(8, 13), make_pair(8, 14)),
+    make_pair(make_pair(8, 14), make_pair(7, 14)),
+    make_pair(make_pair(9, 6), make_pair(10, 6)),	make_pair(make_pair(10, 6), make_pair(11, 6)),	make_pair(make_pair(11, 6), make_pair(12, 6)),	make_pair(make_pair(12, 6), make_pair(13, 6)),	make_pair(make_pair(13, 6), make_pair(14, 6)),	make_pair(make_pair(14, 6), make_pair(14, 7)),
+    make_pair(make_pair(9, 7), make_pair(8, 7)),	make_pair(make_pair(10, 7), make_pair(9, 7)),	make_pair(make_pair(11, 7), make_pair(10, 7)),	make_pair(make_pair(12, 7), make_pair(11, 7)),	make_pair(make_pair(13, 7), make_pair(12, 7)),	make_pair(make_pair(14, 7), make_pair(14, 8)),
+    make_pair(make_pair(9, 8), make_pair(8, 9)),	make_pair(make_pair(10, 8), make_pair(9, 8)),	make_pair(make_pair(11, 8), make_pair(10, 8)),	make_pair(make_pair(12, 8), make_pair(11, 8)),	make_pair(make_pair(13, 8), make_pair(12, 8)),	make_pair(make_pair(14, 8), make_pair(13, 8)),
+    make_pair(make_pair(0, 6), make_pair(1, 6)),	make_pair(make_pair(1, 6), make_pair(2, 6)),	make_pair(make_pair(2, 6), make_pair(3, 6)),	make_pair(make_pair(3, 6), make_pair(4, 6)),	make_pair(make_pair(4, 6), make_pair(5, 6)),	make_pair(make_pair(5, 6), make_pair(6, 5)),
+    make_pair(make_pair(0, 7), make_pair(0, 6)),	make_pair(make_pair(1, 7), make_pair(2, 7)),	make_pair(make_pair(2, 7), make_pair(3, 7)),	make_pair(make_pair(3, 7), make_pair(4, 7)),	make_pair(make_pair(4, 7), make_pair(5, 7)),	make_pair(make_pair(5, 7), make_pair(6, 7)),
+    make_pair(make_pair(0, 8), make_pair(0, 7)),	make_pair(make_pair(1, 8), make_pair(0, 8)),	make_pair(make_pair(2, 8), make_pair(1, 8)),	make_pair(make_pair(3, 8), make_pair(2, 8)),	make_pair(make_pair(4, 8), make_pair(3, 8)),	make_pair(make_pair(5, 8), make_pair(4, 8)),
+    make_pair(make_pair(3,3), make_pair(1,6)),	make_pair(make_pair(4,3), make_pair(1,6)),
+    make_pair(make_pair(3,4), make_pair(1,6)),	make_pair(make_pair(4,4), make_pair(1,6)),
+    make_pair(make_pair(3,12), make_pair(6,13)),	make_pair(make_pair(4,12), make_pair(6,13)),
+    make_pair(make_pair(3,13), make_pair(6,13)),	make_pair(make_pair(4,13), make_pair(6,13)),
+    make_pair(make_pair(12,3), make_pair(8,1)),	make_pair(make_pair(13,3), make_pair(8,1)),
+    make_pair(make_pair(12,4), make_pair(8,1)),	make_pair(make_pair(13,4), make_pair(8,1)),
+    make_pair(make_pair(12,12), make_pair(12,8)),	make_pair(make_pair(13,12), make_pair(12,8)),
+    make_pair(make_pair(12,13), make_pair(12,8)),	make_pair(make_pair(13,13), make_pair(12,8))
+    };
+
+    pair<int, pair<pair<int, int>, pair<int, int>>> SpecialMovements[4] = {
+        make_pair(0, make_pair(make_pair(0, 7), make_pair(1, 7))),
+        make_pair(1, make_pair(make_pair(7, 0), make_pair(7, 1))),
+        make_pair(2, make_pair(make_pair(14, 7), make_pair(13, 7))),
+        make_pair(3, make_pair(make_pair(7, 14), make_pair(7, 13)))
     };
 
     /**
@@ -242,6 +302,23 @@ namespace Game {
         Console::ResetColor();
     }
 
+    void SetNewCoords(pair<int, int> &playerCoords, int current) {
+        for (int j = 0; j < 4; j++) {
+            if (SpecialMovements[j].first == current) {
+                if (SpecialMovements[j].second.first == playerCoords) {
+                    playerCoords = SpecialMovements[j].second.second;
+                    return;
+                }
+            }
+        }
+        for (int i = 0; i < 88; i++) {
+            if (Movements[i].first == playerCoords) {
+                playerCoords = Movements[i].second;
+                return;
+            }
+        }
+    }
+
     /**
      * Sub-menu for a loading screen
      */
@@ -285,6 +362,8 @@ namespace Game {
         char key;
         // Random number for dice
         int random = 0;
+        // Vector for number of tokens left 
+        vector<int> playerTokens;
         // Vector to store rankings
         vector<pair<int, int>> ranking;
         // Array for player colors
@@ -294,6 +373,11 @@ namespace Game {
         int players = GetPlayers();
         // Exit menu if ESC is pressed
         if (players == 0) return;
+
+        // Set initial player tokens based on number of players
+        for (int i = 0; i < players; i++) {
+            playerTokens.push_back(0);
+        }
 
         // Set initial ranking based on number of players
         for (int i = 0; i < players; i++) {
@@ -323,9 +407,30 @@ namespace Game {
             key = _getch();
             if (Utils::CheckIfChar('R', key) || Utils::CheckIfChar('r', key)) {
                 random = Utils::GetRandomNumber(1, 6);
-                Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random);
+                if (random == 6) {
+                    if (playerTokens[currentTurn] < 4) {
+                        SetNewCoords(playerCoords[currentTurn][playerTokens[currentTurn]], currentTurn);
+                        playerTokens[currentTurn]++;
+                    } else {
+                        SetNewCoords(playerCoords[currentTurn][0], currentTurn);
+                    }
+                } else {
+                    SetNewCoords(playerCoords[currentTurn][0], currentTurn);
+                }
             }
+            currentTurn++;
+            if (currentTurn == players) currentTurn = 0;
+            Utils::ClearScreen();
+            Print::Board();
+            for (int i = 0; i < players; i++) {
+                for (int j = 0; j < 4; j++) {
+                    SetPlayerPosition(playerCoords[i][j], playerColors[i]);
+                }
+            }
+            Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random);
         }
+
+        // Winner
 
         _getch();
     }
