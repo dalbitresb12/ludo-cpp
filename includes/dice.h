@@ -7,6 +7,9 @@
 
 using namespace std;
 
+/**
+ * Dice Utils
+ */
 namespace Dice {
     vector<string> Dice_1 = {
         R"(    _______   )",
