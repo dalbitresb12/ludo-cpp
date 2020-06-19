@@ -11,6 +11,7 @@
 #include <utils.h>
 #include <menu.h>
 #include <dice.h>
+#include <movements.h>
 
 using namespace std;
 using namespace System;
@@ -21,88 +22,6 @@ using namespace System;
  */
 namespace Game {
     /**
-     * Board colors definition
-     * Two-dimension array 15x15
-     */
-    ConsoleColor BoardColors[15][15] = {
-        {ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed},
-        {ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed},
-        {ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::White, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::DarkRed},
-        {ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::White, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::DarkRed},
-        {ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed},
-        {ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed},
-        {ConsoleColor::White, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Gray, ConsoleColor::DarkRed, ConsoleColor::Gray, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White},
-        {ConsoleColor::White, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Gray, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::White},
-        {ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Gray, ConsoleColor::DarkYellow, ConsoleColor::Gray, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::White},
-        {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue},
-        {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue},
-        {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue},
-        {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue},
-        {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue},
-        {ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::DarkYellow, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue, ConsoleColor::Blue},
-    };
-
-    pair<pair<int, int>, pair<int,int>> Movements[88] = {
-    make_pair(make_pair(6, 0), make_pair(7, 0)),
-    make_pair(make_pair(6, 1), make_pair(6, 0)),
-    make_pair(make_pair(6, 2), make_pair(6, 1)),
-    make_pair(make_pair(6, 3), make_pair(6, 2)),
-    make_pair(make_pair(6, 4), make_pair(6, 3)),
-    make_pair(make_pair(6, 5), make_pair(6, 4)),
-    make_pair(make_pair(6, 9), make_pair(5, 8)),
-    make_pair(make_pair(6, 10), make_pair(6, 9)),
-    make_pair(make_pair(6, 11), make_pair(6, 10)),
-    make_pair(make_pair(6, 12), make_pair(6, 11)),
-    make_pair(make_pair(6, 13), make_pair(6, 12)),
-    make_pair(make_pair(6, 14), make_pair(6, 13)),
-    make_pair(make_pair(7, 9), make_pair(7, 8)),
-    make_pair(make_pair(7, 10), make_pair(7, 9)),
-    make_pair(make_pair(7, 11), make_pair(7, 10)),
-    make_pair(make_pair(7, 12), make_pair(7, 11)),
-    make_pair(make_pair(7, 13), make_pair(7, 12)),
-    make_pair(make_pair(7, 14), make_pair(6, 14)),
-    make_pair(make_pair(7, 0), make_pair(8, 0)),
-    make_pair(make_pair(7, 1), make_pair(7, 2)),
-    make_pair(make_pair(7, 2), make_pair(7, 3)),
-    make_pair(make_pair(7, 3), make_pair(7, 4)),
-    make_pair(make_pair(7, 4), make_pair(7, 5)),
-    make_pair(make_pair(7, 5), make_pair(7, 6)),
-    make_pair(make_pair(8, 0), make_pair(8, 1)),
-    make_pair(make_pair(8, 1), make_pair(8, 2)),
-    make_pair(make_pair(8, 2), make_pair(8, 3)),
-    make_pair(make_pair(8, 3), make_pair(8, 4)),
-    make_pair(make_pair(8, 4), make_pair(8, 5)),
-    make_pair(make_pair(8, 5), make_pair(9, 6)),
-    make_pair(make_pair(8, 9), make_pair(8, 10)),
-    make_pair(make_pair(8, 10), make_pair(8, 11)),
-    make_pair(make_pair(8, 11), make_pair(8, 12)),
-    make_pair(make_pair(8, 12), make_pair(8, 13)),
-    make_pair(make_pair(8, 13), make_pair(8, 14)),
-    make_pair(make_pair(8, 14), make_pair(7, 14)),
-    make_pair(make_pair(9, 6), make_pair(10, 6)),	make_pair(make_pair(10, 6), make_pair(11, 6)),	make_pair(make_pair(11, 6), make_pair(12, 6)),	make_pair(make_pair(12, 6), make_pair(13, 6)),	make_pair(make_pair(13, 6), make_pair(14, 6)),	make_pair(make_pair(14, 6), make_pair(14, 7)),
-    make_pair(make_pair(9, 7), make_pair(8, 7)),	make_pair(make_pair(10, 7), make_pair(9, 7)),	make_pair(make_pair(11, 7), make_pair(10, 7)),	make_pair(make_pair(12, 7), make_pair(11, 7)),	make_pair(make_pair(13, 7), make_pair(12, 7)),	make_pair(make_pair(14, 7), make_pair(14, 8)),
-    make_pair(make_pair(9, 8), make_pair(8, 9)),	make_pair(make_pair(10, 8), make_pair(9, 8)),	make_pair(make_pair(11, 8), make_pair(10, 8)),	make_pair(make_pair(12, 8), make_pair(11, 8)),	make_pair(make_pair(13, 8), make_pair(12, 8)),	make_pair(make_pair(14, 8), make_pair(13, 8)),
-    make_pair(make_pair(0, 6), make_pair(1, 6)),	make_pair(make_pair(1, 6), make_pair(2, 6)),	make_pair(make_pair(2, 6), make_pair(3, 6)),	make_pair(make_pair(3, 6), make_pair(4, 6)),	make_pair(make_pair(4, 6), make_pair(5, 6)),	make_pair(make_pair(5, 6), make_pair(6, 5)),
-    make_pair(make_pair(0, 7), make_pair(0, 6)),	make_pair(make_pair(1, 7), make_pair(2, 7)),	make_pair(make_pair(2, 7), make_pair(3, 7)),	make_pair(make_pair(3, 7), make_pair(4, 7)),	make_pair(make_pair(4, 7), make_pair(5, 7)),	make_pair(make_pair(5, 7), make_pair(6, 7)),
-    make_pair(make_pair(0, 8), make_pair(0, 7)),	make_pair(make_pair(1, 8), make_pair(0, 8)),	make_pair(make_pair(2, 8), make_pair(1, 8)),	make_pair(make_pair(3, 8), make_pair(2, 8)),	make_pair(make_pair(4, 8), make_pair(3, 8)),	make_pair(make_pair(5, 8), make_pair(4, 8)),
-    make_pair(make_pair(3,3), make_pair(1,6)),	make_pair(make_pair(4,3), make_pair(1,6)),
-    make_pair(make_pair(3,4), make_pair(1,6)),	make_pair(make_pair(4,4), make_pair(1,6)),
-    make_pair(make_pair(3,12), make_pair(6,13)),	make_pair(make_pair(4,12), make_pair(6,13)),
-    make_pair(make_pair(3,13), make_pair(6,13)),	make_pair(make_pair(4,13), make_pair(6,13)),
-    make_pair(make_pair(12,3), make_pair(8,1)),	make_pair(make_pair(13,3), make_pair(8,1)),
-    make_pair(make_pair(12,4), make_pair(8,1)),	make_pair(make_pair(13,4), make_pair(8,1)),
-    make_pair(make_pair(12,12), make_pair(12,8)),	make_pair(make_pair(13,12), make_pair(12,8)),
-    make_pair(make_pair(12,13), make_pair(12,8)),	make_pair(make_pair(13,13), make_pair(12,8))
-    };
-
-    pair<int, pair<pair<int, int>, pair<int, int>>> SpecialMovements[4] = {
-        make_pair(0, make_pair(make_pair(0, 7), make_pair(1, 7))),
-        make_pair(1, make_pair(make_pair(7, 0), make_pair(7, 1))),
-        make_pair(2, make_pair(make_pair(14, 7), make_pair(13, 7))),
-        make_pair(3, make_pair(make_pair(7, 14), make_pair(7, 13)))
-    };
-
-    /**
      * Printing utils on Game Module
      */
     namespace Print {
@@ -112,7 +31,7 @@ namespace Game {
         void Board() {
             for (int i = 0; i < 15; i++) {
                 for (int j = 0; j < 15; j++) {
-                    Console::BackgroundColor = BoardColors[i][j];
+                    Console::BackgroundColor = Movements::BoardColors[i][j];
                     for (int k = 0; k < 2; k++) {
                         for (int l = 0; l < 5; l++) {
                             Console::SetCursorPosition((5 * (j + 1)) + l, (2 * (i + 1)) + k);
@@ -286,17 +205,17 @@ namespace Game {
      * @param {pair<int, int>} &playerCoords
      * @param {ConsoleColor} [playerColor = ConsoleColor::Black]
      */
-    void SetPlayerPosition(pair<int, int> &playerCoords, ConsoleColor playerColor = ConsoleColor::Black) {
-        int x = (5 * playerCoords.first) + 2;
-        int y = 2 * playerCoords.second;
-        Console::BackgroundColor = BoardColors[playerCoords.second - 1][playerCoords.first - 1];
-        if (playerColor == BoardColors[playerCoords.second - 1][playerCoords.first - 1]) {
+    void SetPlayerPosition(pair<int, int> &playerCoords, int &playerNumber, const ConsoleColor &playerColor = ConsoleColor::Black) {
+        int x = (5 * (playerCoords.first + 1)) + 2;
+        int y = 2 * (playerCoords.second + 1);
+        Console::BackgroundColor = Movements::BoardColors[playerCoords.second][playerCoords.first];
+        if (playerColor == Movements::BoardColors[playerCoords.second][playerCoords.first]) {
             Console::ForegroundColor = ConsoleColor::Black;
         } else {
             Console::ForegroundColor = playerColor;
         }
         Console::SetCursorPosition(x, y);
-        cout << 'O';
+        cout << playerNumber + 1;
         Console::SetCursorPosition(x, y + 1);
         cout << '^';
         Console::ResetColor();
@@ -304,16 +223,16 @@ namespace Game {
 
     void SetNewCoords(pair<int, int> &playerCoords, int current) {
         for (int j = 0; j < 4; j++) {
-            if (SpecialMovements[j].first == current) {
-                if (SpecialMovements[j].second.first == playerCoords) {
-                    playerCoords = SpecialMovements[j].second.second;
+            if (Movements::SpecialMovements[j].first == current) {
+                if (Movements::SpecialMovements[j].second.first == playerCoords) {
+                    playerCoords = Movements::SpecialMovements[j].second.second;
                     return;
                 }
             }
         }
         for (int i = 0; i < 88; i++) {
-            if (Movements[i].first == playerCoords) {
-                playerCoords = Movements[i].second;
+            if (Movements::Movements[i].first == playerCoords) {
+                playerCoords = Movements::Movements[i].second;
                 return;
             }
         }
@@ -347,10 +266,10 @@ namespace Game {
         // Variables definition
         // Two-dimension array for player coords
         pair<int, int> playerCoords[4][4] = {
-            { make_pair(3, 3), make_pair(4, 3), make_pair(3, 4), make_pair(4, 4) },
-            { make_pair(12, 3), make_pair(13, 3), make_pair(12, 4), make_pair(13, 4) },
-            { make_pair(12, 12), make_pair(13, 12), make_pair(12, 13), make_pair(13, 13) },
-            { make_pair(3, 12), make_pair(4, 12), make_pair(3, 13), make_pair(4, 13) }
+            { make_pair(2, 2), make_pair(3, 2), make_pair(2, 3), make_pair(3, 3) },
+            { make_pair(11, 2), make_pair(12, 2), make_pair(11, 3), make_pair(12, 3) },
+            { make_pair(11, 11), make_pair(12, 11), make_pair(11, 12), make_pair(12, 12) },
+            { make_pair(2, 11), make_pair(3, 11), make_pair(2, 12), make_pair(3, 12) }
         };
         // Array to store player names
         array<string, 4> playerNames;
@@ -358,12 +277,16 @@ namespace Game {
         int currentTurn = 0;
         // Game loop
         bool finished = false;
+        // Only when got 6 from dice
+        bool playerOut = false;
+        // Selected player to move
+        int selectedPlayer;
         // Save pressed key
         char key;
         // Random number for dice
         int random = 0;
-        // Vector for number of tokens left 
-        vector<int> playerTokens;
+        // Vector for number of active players
+        vector<int> activePlayers;
         // Vector to store rankings
         vector<pair<int, int>> ranking;
         // Array for player colors
@@ -376,7 +299,7 @@ namespace Game {
 
         // Set initial player tokens based on number of players
         for (int i = 0; i < players; i++) {
-            playerTokens.push_back(0);
+            activePlayers.push_back(0);
         }
 
         // Set initial ranking based on number of players
@@ -398,7 +321,7 @@ namespace Game {
         // Print initial player positions
         for (int i = 0; i < players; i++) {
             for (int j = 0; j < 4; j++) {
-                SetPlayerPosition(playerCoords[i][j], playerColors[i]);
+                SetPlayerPosition(playerCoords[i][j], j, playerColors[i]);
             }
         }
 
@@ -407,27 +330,36 @@ namespace Game {
             key = _getch();
             if (Utils::CheckIfChar('R', key) || Utils::CheckIfChar('r', key)) {
                 random = Utils::GetRandomNumber(1, 6);
+                Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random);
+
                 if (random == 6) {
-                    if (playerTokens[currentTurn] < 4) {
-                        SetNewCoords(playerCoords[currentTurn][playerTokens[currentTurn]], currentTurn);
-                        playerTokens[currentTurn]++;
-                    } else {
+                    playerOut = true;
+                    if (activePlayers[currentTurn] < 4) {
+                        SetNewCoords(playerCoords[currentTurn][activePlayers[currentTurn]], currentTurn);
+                        activePlayers[currentTurn]++;
+                    }
+                }
+
+                if (activePlayers[currentTurn] > 0 && !playerOut) {
+                    for (int i = 0; i < random; i++) {
                         SetNewCoords(playerCoords[currentTurn][0], currentTurn);
                     }
-                } else {
-                    SetNewCoords(playerCoords[currentTurn][0], currentTurn);
                 }
-            }
-            currentTurn++;
-            if (currentTurn == players) currentTurn = 0;
-            Utils::ClearScreen();
-            Print::Board();
-            for (int i = 0; i < players; i++) {
-                for (int j = 0; j < 4; j++) {
-                    SetPlayerPosition(playerCoords[i][j], playerColors[i]);
+
+                Print::Board();
+                for (int i = 0; i < players; i++) {
+                    for (int j = 0; j < 4; j++) {
+                        SetPlayerPosition(playerCoords[i][j], j, playerColors[i]);
+                    }
                 }
+                playerOut = false;
             }
-            Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random);
+
+            if (random != 6) {
+                currentTurn++;
+                if (currentTurn == players) 
+                    currentTurn = 0;
+            }
         }
 
         // Winner
