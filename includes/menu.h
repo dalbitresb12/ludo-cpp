@@ -92,12 +92,12 @@ namespace Menu {
             "se saca un número que da como destino una casilla con una ficha propia,no",
             "se puede mover y se pierde el turno.",
             "",
-            "-Cuando una ficha llega a la vertical de color está seguro, es decir ningún", 
+            "- Cuando una ficha llega a la vertical de color está seguro, es decir ningún", 
             "contrincante puede capturarla. Sin embargo, debe llegar a la casa o meta con la",
             "cuenta exacta, de lo contrario tiene que moverse dentro de la vertical de color según", 
             "lo indicado por el dado.",
             "",
-            "-El juego finaliza cuando uno de los jugadores ha colocado las 4 fichas en la casa o meta.",
+            "- El juego finaliza cuando uno de los jugadores ha colocado las 4 fichas en la casa o meta.",
             "","",
             "Presione ESC para regresar al menú"
         };

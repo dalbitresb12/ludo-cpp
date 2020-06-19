@@ -284,6 +284,7 @@ namespace Game {
             { make_pair(11, 11), make_pair(12, 11), make_pair(11, 12), make_pair(12, 12) },
             { make_pair(2, 11), make_pair(3, 11), make_pair(2, 12), make_pair(3, 12) }
         };
+        bool playersOut[4][4] = { {false}, {false}, {false}, {false} };
         // Array to store player names
         array<string, 4> playerNames;
         // Current turn
@@ -293,7 +294,7 @@ namespace Game {
         // Only when got 6 from dice
         bool playerOut = false;
         // Selected player to move
-        int selectedPlayer;
+        int selectedPlayer = 0;
         // Counter for 6s
         int sixCounter = 0;
         // Times played counter
@@ -349,9 +350,29 @@ namespace Game {
                 random = Utils::GetRandomNumber(1, 6);
                 Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random, timesPlayed);
 
+                if (activePlayers[currentTurn] > 1) {
+                    do {
+                        do {
+                            key = _getch();
+                            switch (key) {
+                                case '1': selectedPlayer = 0;
+                                break;
+                                case '2': selectedPlayer = 1;
+                                break;
+                                case '3': selectedPlayer = 2;
+                                break;
+                                case '4': selectedPlayer = 3;
+                                break;
+                                default: selectedPlayer = -1;
+                                break;
+                            }
+                        } while (selectedPlayer >= 0 && selectedPlayer <= 3);
+                    } while (!playersOut[currentTurn][selectedPlayer]);
+                }
+
                 timesPlayed[currentTurn]++;
 
-                if (sixCounter == 2) {
+                if (sixCounter == 3) {
                     sixCounter = 0;
                     currentTurn++;
                     if (currentTurn == players) currentTurn = 0;
@@ -365,8 +386,8 @@ namespace Game {
                 if (random == 6 && activePlayers[currentTurn] < 4) {
                     playerOut = true;
                     SetNewCoords(playerCoords[currentTurn][activePlayers[currentTurn]], currentTurn);
+                    playersOut[currentTurn][activePlayers[currentTurn]] = true;
                     activePlayers[currentTurn]++;
-                    
                 }
 
                 if (activePlayers[currentTurn] > 0 && !playerOut) {
