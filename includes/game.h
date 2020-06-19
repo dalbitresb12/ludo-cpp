@@ -54,7 +54,7 @@ namespace Game {
          * @param {vector<pair<int, int>>} &ranking
          * @param {int} &random
          */
-        void Scoreboard(int &players, array<string, 4> &playerNames, int &current, array<ConsoleColor, 4> &playerColors, vector<pair<int, int>> &ranking, int &random) {
+        void Scoreboard(int &players, array<string, 4> &playerNames, int &current, array<ConsoleColor, 4> &playerColors, vector<pair<int, int>> &ranking, int &random, int timesPlayed[4]) {
             // Variable definition
             int boardWidth = 81;
             int scoreboardWidth = Console::WindowWidth - boardWidth;
@@ -71,6 +71,17 @@ namespace Game {
                 str = "";
                 str.append(to_string(i + 1)).append(". ").append(playerNames[ranking[i].second]);
                 str.append(" - ").append(to_string(ranking[i].first));
+                main.push_back(str);
+            }
+
+            // Print times played
+            main.push_back("");
+            main.push_back("===== TURNOS JUGADOS =====");
+            main.push_back("");
+            for (int i = 0; i < players; i++) {
+                str = "";
+                str.append(to_string(i + 1)).append(". ").append(playerNames[i]);
+                str.append(" - ").append(to_string(timesPlayed[i]));
                 main.push_back(str);
             }
             
@@ -94,6 +105,8 @@ namespace Game {
                 if (i == 2) Console::ForegroundColor = playerColors[current];
                 else if (i >= 6 && i < (6 + players)) {
                     Console::ForegroundColor = playerColors[ranking[i - 6].second];
+                } else if (i >= (9 + players) && i < (9 + 2 * players)) {
+                    Console::ForegroundColor = playerColors[i - (9 + players)];
                 }
                 cout << main[i] << "\n";
                 Console::ResetColor();
@@ -281,6 +294,10 @@ namespace Game {
         bool playerOut = false;
         // Selected player to move
         int selectedPlayer;
+        // Counter for 6s
+        int sixCounter = 0;
+        // Times played counter
+        int timesPlayed[4] = {0};
         // Save pressed key
         char key;
         // Random number for dice
@@ -316,7 +333,7 @@ namespace Game {
         Print::Board();
 
         // Print initial scoreboard
-        Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random);
+        Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random, timesPlayed);
 
         // Print initial player positions
         for (int i = 0; i < players; i++) {
@@ -330,14 +347,26 @@ namespace Game {
             key = _getch();
             if (Utils::CheckIfChar('R', key) || Utils::CheckIfChar('r', key)) {
                 random = Utils::GetRandomNumber(1, 6);
-                Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random);
+                Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random, timesPlayed);
+
+                timesPlayed[currentTurn]++;
+
+                if (sixCounter == 2) {
+                    sixCounter = 0;
+                    currentTurn++;
+                    if (currentTurn == players) currentTurn = 0;
+                    continue;
+                }
 
                 if (random == 6) {
+                    sixCounter++;
+                }
+
+                if (random == 6 && activePlayers[currentTurn] < 4) {
                     playerOut = true;
-                    if (activePlayers[currentTurn] < 4) {
-                        SetNewCoords(playerCoords[currentTurn][activePlayers[currentTurn]], currentTurn);
-                        activePlayers[currentTurn]++;
-                    }
+                    SetNewCoords(playerCoords[currentTurn][activePlayers[currentTurn]], currentTurn);
+                    activePlayers[currentTurn]++;
+                    
                 }
 
                 if (activePlayers[currentTurn] > 0 && !playerOut) {
@@ -356,9 +385,9 @@ namespace Game {
             }
 
             if (random != 6) {
+                sixCounter = 0;
                 currentTurn++;
-                if (currentTurn == players) 
-                    currentTurn = 0;
+                if (currentTurn == players) currentTurn = 0;
             }
         }
 
