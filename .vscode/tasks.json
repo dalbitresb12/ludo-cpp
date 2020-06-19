@@ -46,6 +46,30 @@
 		},
 		{
 			"type": "shell",
+			"label": "Microsoft C++: Build debug version of active file",
+			"command": "vsdevcmd && cl",
+			"args": [
+				"/clr",
+				"/Odi",
+				"/Zi",
+				"/I",
+				"${workspaceFolder}/includes/",
+				"/Fo:${workspaceFolder}/debug/${fileBasenameNoExtension}.obj",
+				"${file}",
+				"/link",
+				"user32.lib",
+				"/ASSEMBLYDEBUG",
+				"/DEBUG",
+				"/out:${workspaceFolder}/debug/${fileBasenameNoExtension}.exe",
+				"/pdb:${workspaceFolder}/debug/${fileBasenameNoExtension}.pdb"
+			],
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"type": "shell",
 			"label": "Microsoft C++: Build debug version of main project file",
 			"command": "vsdevcmd && cl",
 			"args": [

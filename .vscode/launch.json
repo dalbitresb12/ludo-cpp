@@ -17,5 +17,18 @@
             "preLaunchTask": "Microsoft C++: Build debug version of main project file",
             "symbolSearchPath": "${workspaceFolder}/debug/"
         },
+        {
+            "name": "C++ Launch Active (Windows)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/debug/${fileBasenameNoExtension}.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "preLaunchTask": "Microsoft C++: Build debug version of active file",
+            "symbolSearchPath": "${workspaceFolder}/debug/"
+        },
     ]
 }
