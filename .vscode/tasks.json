@@ -37,7 +37,35 @@
 				"/out:${workspaceFolder}\\build\\main.exe"
 			],
 			"options": {
-				"cwd": "${workspaceFolder}\\includes"
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "Microsoft C++: Build debug version of main project file",
+			"command": "vsdevcmd && cl",
+			"args": [
+				"/clr",
+				"/Odi",
+				"/Zi",
+				"/I",
+				"${workspaceFolder}/includes/",
+				"/Fd:${workspaceFolder}/debug/vc141.pdb",
+				"/Fo:${workspaceFolder}/debug/main.obj",
+				"${workspaceFolder}/main.cpp",
+				"/link",
+				"user32.lib",
+				"/ASSEMBLYDEBUG",
+				"/DEBUG",
+				"/out:${workspaceFolder}/debug/main.exe",
+				"/pdb:${workspaceFolder}/debug/main.pdb"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
 			},
 			"problemMatcher": [
 				"$msCompile"

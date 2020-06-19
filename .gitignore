@@ -40,3 +40,6 @@
 
 # Builds
 build/
+
+# Debug
+debug/
