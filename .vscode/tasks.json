@@ -7,14 +7,12 @@
 			"command": "vsdevcmd && cl.exe",
 			"args": [
 				"/clr",
-				"/Fe",
+				"/Fe:",
+				"${workspaceFolder}/build/${fileBasenameNoExtension}.exe",
+				"/Fo${workspaceFolder}/build/obj/",
 				"/I",
-				"${workspaceFolder}\\includes\\",
-				"/Fo${workspaceFolder}\\build\\obj\\",
+				"${workspaceFolder}/includes/",
 				"${file}",
-				"/link",
-				"user32.lib",
-				"/out:${workspaceFolder}\\build\\${fileBasenameNoExtension}.exe"
 			],
 			"problemMatcher": [
 				"$msCompile"
@@ -27,66 +25,12 @@
 			"command": "vsdevcmd && cl.exe",
 			"args": [
 				"/clr",
-				"/Fe",
-				"/I",
-				"${workspaceFolder}\\includes\\",
-				"/Fo${workspaceFolder}\\build\\obj\\",
-				"${workspaceFolder}\\main.cpp",
-				"/link",
-				"user32.lib",
-				"/out:${workspaceFolder}\\build\\main.exe"
-			],
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"problemMatcher": [
-				"$msCompile"
-			],
-			"group": "build"
-		},
-		{
-			"type": "shell",
-			"label": "Microsoft C++: Build debug version of active file",
-			"command": "vsdevcmd && cl",
-			"args": [
-				"/clr",
-				"/Odi",
-				"/Zi",
+				"/Fe:",
+				"${workspaceFolder}/build/main.exe",
+				"/Fo${workspaceFolder}/build/obj/",
 				"/I",
 				"${workspaceFolder}/includes/",
-				"/Fo:${workspaceFolder}/debug/${fileBasenameNoExtension}.obj",
-				"${file}",
-				"/link",
-				"user32.lib",
-				"/ASSEMBLYDEBUG",
-				"/DEBUG",
-				"/out:${workspaceFolder}/debug/${fileBasenameNoExtension}.exe",
-				"/pdb:${workspaceFolder}/debug/${fileBasenameNoExtension}.pdb"
-			],
-			"problemMatcher": [
-				"$msCompile"
-			],
-			"group": "build"
-		},
-		{
-			"type": "shell",
-			"label": "Microsoft C++: Build debug version of main project file",
-			"command": "vsdevcmd && cl",
-			"args": [
-				"/clr",
-				"/Odi",
-				"/Zi",
-				"/I",
-				"${workspaceFolder}/includes/",
-				"/Fd:${workspaceFolder}/debug/vc141.pdb",
-				"/Fo:${workspaceFolder}/debug/main.obj",
 				"${workspaceFolder}/main.cpp",
-				"/link",
-				"user32.lib",
-				"/ASSEMBLYDEBUG",
-				"/DEBUG",
-				"/out:${workspaceFolder}/debug/main.exe",
-				"/pdb:${workspaceFolder}/debug/main.pdb"
 			],
 			"options": {
 				"cwd": "${workspaceFolder}"

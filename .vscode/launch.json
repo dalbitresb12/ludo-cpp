@@ -15,7 +15,7 @@
             "environment": [],
             "externalConsole": true,
             "preLaunchTask": "Microsoft C++: Build debug version of main project file",
-            "symbolSearchPath": "${workspaceFolder}/debug/"
+            "symbolSearchPath": "https://msdl.microsoft.com/download/symbols",
         },
         {
             "name": "C++ Launch Active (Windows)",
@@ -28,7 +28,7 @@
             "environment": [],
             "externalConsole": true,
             "preLaunchTask": "Microsoft C++: Build debug version of active file",
-            "symbolSearchPath": "${workspaceFolder}/debug/"
+            "symbolSearchPath": "https://msdl.microsoft.com/download/symbols"
         },
     ]
 }
