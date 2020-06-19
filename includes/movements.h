@@ -86,8 +86,8 @@ namespace Movements {
         make_pair(make_pair(2, 12), make_pair(6, 13)), make_pair(make_pair(3, 12), make_pair(6, 13)),
         make_pair(make_pair(11, 2), make_pair(8, 1)), make_pair(make_pair(12, 2), make_pair(8, 1)),
         make_pair(make_pair(11, 3), make_pair(8, 1)), make_pair(make_pair(12, 3), make_pair(8, 1)),
-        make_pair(make_pair(11, 11), make_pair(12, 8)), make_pair(make_pair(12, 11), make_pair(12, 8)),
-        make_pair(make_pair(11, 12), make_pair(12, 8)), make_pair(make_pair(12, 12), make_pair(12, 8))
+        make_pair(make_pair(11, 11), make_pair(13, 8)), make_pair(make_pair(12, 11), make_pair(13, 8)),
+        make_pair(make_pair(11, 12), make_pair(13, 8)), make_pair(make_pair(12, 12), make_pair(13, 8))
     };
 
     /**
