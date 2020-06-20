@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <algorithm>
 #include <windows.h>
 #include <conio.h>
 #include <utils.h>
@@ -278,12 +279,7 @@ namespace Game {
 
         // Variables definition
         // Two-dimension array for player coords
-        pair<int, int> playerCoords[4][4] = {
-            { make_pair(2, 2), make_pair(3, 2), make_pair(2, 3), make_pair(3, 3) },
-            { make_pair(11, 2), make_pair(12, 2), make_pair(11, 3), make_pair(12, 3) },
-            { make_pair(11, 11), make_pair(12, 11), make_pair(11, 12), make_pair(12, 12) },
-            { make_pair(2, 11), make_pair(3, 11), make_pair(2, 12), make_pair(3, 12) }
-        };
+        pair<int, int> playerCoords[4][4];
         bool playersOut[4][4] = { {false}, {false}, {false}, {false} };
         // Array to store player names
         array<string, 4> playerNames;
@@ -291,12 +287,16 @@ namespace Game {
         int currentTurn = 0;
         // Game loop
         bool finished = false;
-        // Only when got 6 from dice
-        bool playerOut = false;
+        // Used to know if player came out of jail on last turn
+        bool playerCameOut = false;
+        // Should reload board
+        bool reload = false;
         // Selected player to move
         int selectedPlayer = 0;
         // Counter for 6s
         int sixCounter = 0;
+        // Should render scoreboard
+        bool renderScoreboard = true;
         // Times played counter
         int timesPlayed[4] = {0};
         // Save pressed key
@@ -314,6 +314,13 @@ namespace Game {
         int players = GetPlayers();
         // Exit menu if ESC is pressed
         if (players == 0) return;
+
+        // Set initial player positions
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                playerCoords[i][j] = Movements::InitialPositions[i][j];
+            }
+        }
 
         // Set initial player tokens based on number of players
         for (int i = 0; i < players; i++) {
@@ -333,9 +340,6 @@ namespace Game {
         Utils::ClearScreen();
         Print::Board();
 
-        // Print initial scoreboard
-        Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random, timesPlayed);
-
         // Print initial player positions
         for (int i = 0; i < players; i++) {
             for (int j = 0; j < 4; j++) {
@@ -343,31 +347,80 @@ namespace Game {
             }
         }
 
+        pair<int, int> temp;
+
         // Start game loop
         while (!finished) {
+            temp.first = Console::CursorLeft;
+            temp.second = Console::CursorTop;
+            Console::SetCursorPosition(5, 33);
+            cout << "                                 ";
+            Console::SetCursorPosition(5, 33);
+            for (int i = 0; i < 4; i++) {
+                cout << playersOut[currentTurn][i] << " ";
+            }
+            Console::SetCursorPosition(5, 34);
+            cout << "                                 ";
+            Console::SetCursorPosition(5, 34);
+            cout << activePlayers[currentTurn];
+            Console::SetCursorPosition(5, 35);
+            cout << "                                 ";
+            Console::SetCursorPosition(5, 35);
+            cout << currentTurn;
+            Console::SetCursorPosition(temp.first, temp.second);
+
+            Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random, timesPlayed);
             key = _getch();
             if (Utils::CheckIfChar('R', key) || Utils::CheckIfChar('r', key)) {
+                
                 random = Utils::GetRandomNumber(1, 6);
-                Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random, timesPlayed);
 
-                if (activePlayers[currentTurn] > 1) {
+                if (activePlayers[currentTurn] > 1 || (random == 6 && activePlayers[currentTurn] > 0)) {
+                    renderScoreboard = true;
                     do {
                         do {
+                            temp.first = Console::CursorLeft;
+                            temp.second = Console::CursorTop;
+                            Console::SetCursorPosition(5, 33);
+                            cout << "                                 ";
+                            Console::SetCursorPosition(5, 33);
+                            for (int i = 0; i < 4; i++) {
+                                cout << playersOut[currentTurn][i] << " ";
+                            }
+                            Console::SetCursorPosition(5, 34);
+                            cout << "                                 ";
+                            Console::SetCursorPosition(5, 34);
+                            cout << activePlayers[currentTurn];
+                            Console::SetCursorPosition(5, 35);
+                            cout << "                                 ";
+                            Console::SetCursorPosition(5, 35);
+                            cout << currentTurn;
+                            Console::SetCursorPosition(temp.first, temp.second);
+
+                            if (renderScoreboard) {
+                                renderScoreboard = false;
+                                Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random, timesPlayed);
+                            }
                             key = _getch();
                             switch (key) {
-                                case '1': selectedPlayer = 0;
-                                break;
-                                case '2': selectedPlayer = 1;
-                                break;
-                                case '3': selectedPlayer = 2;
-                                break;
-                                case '4': selectedPlayer = 3;
-                                break;
-                                default: selectedPlayer = -1;
-                                break;
+                                case '1':
+                                    selectedPlayer = 0;
+                                    break;
+                                case '2':
+                                    selectedPlayer = 1;
+                                    break;
+                                case '3':
+                                    selectedPlayer = 2;
+                                    break;
+                                case '4':
+                                    selectedPlayer = 3;
+                                    break;
+                                default:
+                                    selectedPlayer = -1;
+                                    break;
                             }
-                        } while (selectedPlayer >= 0 && selectedPlayer <= 3);
-                    } while (!playersOut[currentTurn][selectedPlayer]);
+                        } while (!(selectedPlayer >= 0 && selectedPlayer <= 3));
+                    } while ((!playersOut[currentTurn][selectedPlayer] && random != 6) && !(random == 6 && !playersOut[currentTurn][selectedPlayer]));
                 }
 
                 timesPlayed[currentTurn]++;
@@ -383,33 +436,79 @@ namespace Game {
                     sixCounter++;
                 }
 
-                if (random == 6 && activePlayers[currentTurn] < 4) {
-                    playerOut = true;
-                    SetNewCoords(playerCoords[currentTurn][activePlayers[currentTurn]], currentTurn);
+                if (random == 6 && activePlayers[currentTurn] < 4 && !playersOut[currentTurn][selectedPlayer]) {
+                    playerCameOut = true;
+                    reload = true;
+                    SetNewCoords(playerCoords[currentTurn][selectedPlayer], currentTurn);
                     playersOut[currentTurn][activePlayers[currentTurn]] = true;
                     activePlayers[currentTurn]++;
+                    for (int i = 0; i < players; i++) {
+                        if (i != currentTurn) {
+                            pair<int, int> *p = find(begin(playerCoords[i]), end(playerCoords[i]), playerCoords[currentTurn][selectedPlayer]);
+                            if (p != end(playerCoords[i]) && *p == playerCoords[currentTurn][selectedPlayer]) {
+                                int d = distance(begin(playerCoords[i]), p);
+                                
+                                temp.first = Console::CursorLeft;
+                                temp.second = Console::CursorTop;
+                                Console::SetCursorPosition(5, 37);
+                                cout << "   ";
+                                Console::SetCursorPosition(5, 37);
+                                cout << d;
+                                Console::SetCursorPosition(temp.first, temp.second);
+
+                                playerCoords[i][d] = Movements::InitialPositions[i][d];
+                                playersOut[i][d] = false;
+                                activePlayers[i]--;
+                            }
+                        }
+                    }
                 }
 
-                if (activePlayers[currentTurn] > 0 && !playerOut) {
+                if (activePlayers[currentTurn] > 0 && !playerCameOut) {
+                    reload = true;
                     for (int i = 0; i < random; i++) {
-                        SetNewCoords(playerCoords[currentTurn][0], currentTurn);
+                        SetNewCoords(playerCoords[currentTurn][selectedPlayer], currentTurn);
+                    }
+                    for (int i = 0; i < players; i++) {
+                        if (i != currentTurn) {
+                            pair<int, int> *p = find(begin(playerCoords[i]), end(playerCoords[i]), playerCoords[currentTurn][selectedPlayer]);
+                            if (p != end(playerCoords[i]) && *p == playerCoords[currentTurn][selectedPlayer]) {
+                                int d = distance(begin(playerCoords[i]), p);
+
+                                temp.first = Console::CursorLeft;
+                                temp.second = Console::CursorTop;
+                                Console::SetCursorPosition(5, 37);
+                                cout << "   ";
+                                Console::SetCursorPosition(5, 37);
+                                cout << d;
+                                Console::SetCursorPosition(temp.first, temp.second);
+
+                                playerCoords[i][d] = Movements::InitialPositions[i][d];
+                                playersOut[i][d] = false;
+                                activePlayers[i]--;
+                            }
+                        }
                     }
                 }
 
-                Print::Board();
-                for (int i = 0; i < players; i++) {
-                    for (int j = 0; j < 4; j++) {
-                        SetPlayerPosition(playerCoords[i][j], j, playerColors[i]);
+                if (reload) {
+                    Print::Board();
+                    for (int i = 0; i < players; i++) {
+                        for (int j = 0; j < 4; j++) {
+                            SetPlayerPosition(playerCoords[i][j], j, playerColors[i]);
+                        }
                     }
                 }
-                playerOut = false;
-            }
 
-            if (random != 6) {
-                sixCounter = 0;
-                currentTurn++;
-                if (currentTurn == players) currentTurn = 0;
+                if (random != 6) {
+                    sixCounter = 0;
+                    currentTurn++;
+                    if (currentTurn == players) currentTurn = 0;
+                }
             }
+            playerCameOut = false;
+            selectedPlayer = 0;
+            reload = false;
         }
 
         // Winner
