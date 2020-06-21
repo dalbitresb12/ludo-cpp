@@ -21,14 +21,22 @@ namespace Utils {
      * 
      * @param {char} [fill = ' ']
      */
-    void ClearScreen(char fill = ' ') { 
+    void ClearScreen(char fill = ' ') {
+        // Set initial coords on Console
         COORD tl = {0,0};
+        // Variable to save Console buffer data
         CONSOLE_SCREEN_BUFFER_INFO s;
+        // Get console output handle
         HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+        // Save screen buffer info to previously declared variable
         GetConsoleScreenBufferInfo(console, &s);
+        // Calculate the cells that we need to write to (the entire screen)
         DWORD written, cells = s.dwSize.X * s.dwSize.Y;
+        // Fill the calculated cells with the fill char on the output handle.
         FillConsoleOutputCharacter(console, fill, cells, tl, &written);
+        // Fill the calculated cells with the original attributes
         FillConsoleOutputAttribute(console, s.wAttributes, cells, tl, &written);
+        // Reset cursor position to initial (0, 0)
         SetConsoleCursorPosition(console, tl);
     }
 
@@ -104,8 +112,29 @@ namespace Utils {
         }
     }
 
-    bool CheckIfChar(char key, char c) {
-        return (int)c == (int)key;
+    /**
+     * Check if a char variable is equal to another char
+     * 
+     * @param {char} &key
+     * @param {char} c
+     * @return {bool} true or false
+     */
+    bool CheckIfChar(char &key, char c) {
+        return (int)key == (int)c;
+    }
+
+    /**
+     * Check if the key is one of the keys in the array
+     * 
+     * @param {char} &key
+     * @param {const char} keys[]
+     * @param {const int} &size
+     */
+    bool CheckIfInCharArray(char &key, const char keys[], const int &size) {
+        for (int i = 0; i < size; i++) {
+            if (keys[i] == key) return true;
+        }
+        return false;
     }
 
     /**
