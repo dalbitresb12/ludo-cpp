@@ -303,8 +303,8 @@ namespace Game {
         char key;
         // Random number for dice
         int random = 0;
-        // Vector for number of active players
-        vector<int> activePlayers;
+        // Number of active players
+        int activePlayers;
         // Vector to store rankings
         vector<pair<int, int>> ranking;
         // Array for player colors
@@ -320,11 +320,6 @@ namespace Game {
             for (int j = 0; j < 4; j++) {
                 playerCoords[i][j] = Movements::InitialPositions[i][j];
             }
-        }
-
-        // Set initial player tokens based on number of players
-        for (int i = 0; i < players; i++) {
-            activePlayers.push_back(0);
         }
 
         // Set initial ranking based on number of players
@@ -349,6 +344,10 @@ namespace Game {
 
         pair<int, int> temp;
 
+        // Set possible keys a user can use during the game loop
+        const int possibleKeysSize = 2;
+        const char possibleKeys[possibleKeysSize] = {'R', 'r'};
+
         // Start game loop
         while (!finished) {
             temp.first = Console::CursorLeft;
@@ -362,7 +361,7 @@ namespace Game {
             Console::SetCursorPosition(5, 34);
             cout << "                                 ";
             Console::SetCursorPosition(5, 34);
-            cout << activePlayers[currentTurn];
+            cout << count(begin(playersOut[currentTurn]), end(playersOut[currentTurn]), true);
             Console::SetCursorPosition(5, 35);
             cout << "                                 ";
             Console::SetCursorPosition(5, 35);
@@ -370,12 +369,20 @@ namespace Game {
             Console::SetCursorPosition(temp.first, temp.second);
 
             Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random, timesPlayed);
-            key = _getch();
-            if (Utils::CheckIfChar('R', key) || Utils::CheckIfChar('r', key)) {
-                
+            do {
+                key = _getch();
+            } while (!Utils::CheckIfInCharArray(key, possibleKeys, possibleKeysSize));
+
+            if (Utils::CheckIfChar(key, 'R') || Utils::CheckIfChar(key, 'r')) {
+                // Pre-calculate number of active players based on playersOut array
+                activePlayers = count(begin(playersOut[currentTurn]), end(playersOut[currentTurn]), true);
+
+                // Generate random number for current turn
                 random = Utils::GetRandomNumber(1, 6);
 
-                if (activePlayers[currentTurn] > 1 || (random == 6 && activePlayers[currentTurn] > 0)) {
+                // Only run if player has more than 1 player on the board
+                // or player got a six and has at least 1 player on the board
+                if (activePlayers > 1 || (random == 6 && activePlayers > 0)) {
                     renderScoreboard = true;
                     do {
                         do {
@@ -390,7 +397,7 @@ namespace Game {
                             Console::SetCursorPosition(5, 34);
                             cout << "                                 ";
                             Console::SetCursorPosition(5, 34);
-                            cout << activePlayers[currentTurn];
+                            cout << activePlayers;
                             Console::SetCursorPosition(5, 35);
                             cout << "                                 ";
                             Console::SetCursorPosition(5, 35);
@@ -421,10 +428,14 @@ namespace Game {
                             }
                         } while (!(selectedPlayer >= 0 && selectedPlayer <= 3));
                     } while ((!playersOut[currentTurn][selectedPlayer] && random != 6) && !(random == 6 && !playersOut[currentTurn][selectedPlayer]));
+                } else {
+                    selectedPlayer = distance(begin(playersOut[currentTurn]), find(begin(playersOut[currentTurn]), end(playersOut[currentTurn]), true));
                 }
 
+                // Counter for times played of every player
                 timesPlayed[currentTurn]++;
 
+                // If the player has had 3 six in a row, exit current loop
                 if (sixCounter == 3) {
                     sixCounter = 0;
                     currentTurn++;
@@ -432,16 +443,18 @@ namespace Game {
                     continue;
                 }
 
+                // Counter of 6's
                 if (random == 6) {
                     sixCounter++;
                 }
 
-                if (random == 6 && activePlayers[currentTurn] < 4 && !playersOut[currentTurn][selectedPlayer]) {
+                // Only run if dice says 6
+                // Gives the player the option to take a player out of jail
+                if (random == 6 && activePlayers < 4 && !playersOut[currentTurn][selectedPlayer]) {
                     playerCameOut = true;
                     reload = true;
                     SetNewCoords(playerCoords[currentTurn][selectedPlayer], currentTurn);
-                    playersOut[currentTurn][activePlayers[currentTurn]] = true;
-                    activePlayers[currentTurn]++;
+                    playersOut[currentTurn][selectedPlayer] = true;
                     for (int i = 0; i < players; i++) {
                         if (i != currentTurn) {
                             pair<int, int> *p = find(begin(playerCoords[i]), end(playerCoords[i]), playerCoords[currentTurn][selectedPlayer]);
@@ -450,21 +463,23 @@ namespace Game {
                                 
                                 temp.first = Console::CursorLeft;
                                 temp.second = Console::CursorTop;
-                                Console::SetCursorPosition(5, 37);
+                                Console::SetCursorPosition(5, 36);
                                 cout << "   ";
-                                Console::SetCursorPosition(5, 37);
+                                Console::SetCursorPosition(5, 36);
                                 cout << d;
                                 Console::SetCursorPosition(temp.first, temp.second);
 
                                 playerCoords[i][d] = Movements::InitialPositions[i][d];
                                 playersOut[i][d] = false;
-                                activePlayers[i]--;
                             }
                         }
                     }
                 }
 
-                if (activePlayers[currentTurn] > 0 && !playerCameOut) {
+                // Move the player the times the dice says and check if the new position
+                // already has another player, then send it to jail
+                // Only run if a player hasn't come out of jail in the previous turn
+                if (activePlayers > 0 && !playerCameOut) {
                     reload = true;
                     for (int i = 0; i < random; i++) {
                         SetNewCoords(playerCoords[currentTurn][selectedPlayer], currentTurn);
@@ -477,20 +492,20 @@ namespace Game {
 
                                 temp.first = Console::CursorLeft;
                                 temp.second = Console::CursorTop;
-                                Console::SetCursorPosition(5, 37);
+                                Console::SetCursorPosition(5, 36);
                                 cout << "   ";
-                                Console::SetCursorPosition(5, 37);
+                                Console::SetCursorPosition(5, 36);
                                 cout << d;
                                 Console::SetCursorPosition(temp.first, temp.second);
 
                                 playerCoords[i][d] = Movements::InitialPositions[i][d];
                                 playersOut[i][d] = false;
-                                activePlayers[i]--;
                             }
                         }
                     }
                 }
 
+                // Reload board only when a change has happened
                 if (reload) {
                     Print::Board();
                     for (int i = 0; i < players; i++) {
@@ -500,12 +515,15 @@ namespace Game {
                     }
                 }
 
+                // Change turn to next person and reset six counter
                 if (random != 6) {
                     sixCounter = 0;
                     currentTurn++;
                     if (currentTurn == players) currentTurn = 0;
                 }
             }
+
+            // Reset variables on every loop
             playerCameOut = false;
             selectedPlayer = 0;
             reload = false;
