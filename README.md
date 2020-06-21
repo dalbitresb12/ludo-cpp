@@ -9,29 +9,44 @@ Trabajo final de fin de curso de Programación I de la carrera de Ingeniería de
 
 ## Pre-Requisitos 📋
 
-- [_Microsoft Visual C++ 2019 - Build Tools_](https://aka.ms/buildtools)
+Hay dos opciones para compilar este proyecto:
 
-### Ajustes del compilador ⚙️
+1. [_Microsoft Visual C++ 2019 - Standalone Build Tools_](https://aka.ms/buildtools)
+2. [_Microsoft Visual C++ 2019 - Community/Professional/Enterprise_](https://visualstudio.microsoft.com/)
 
-- CLI/CLR (```/clr```)
-- Name EXE File (```/Fe```)
-- Include Paths (```/I ${workspaceFolder}/includes/```)
-- Object File Name (```/Fo${workspaceFolder}/build/obj/```)
-- File Path (```${workspaceFolder}/main.cpp```)
+El proyecto está 100% probado que funciona utilizando los _Build Tools_ de forma independiente del editor _Visual Studio_, pero debería funcionar de todas maneras con el último.
 
-### Ajustes del _linker_ ⚙️
+**Importante**: Es necesario tener instalado en cualquiera de los dos casos el soporte para código de _C++/CLI_.
 
-- Linker (```/link```)
-- ```user32.lib```
-- Output Path (```/out:${workspaceFolder}/build/main.exe```)
-
-## Proceso de Ejecución ⚙️
+## Compilación y Ejecución ⚙️
 
 Se pueden utilizar los archivos binarios precompilados, disponibles en GitHub como _releases_.
 
 Para compilar el proyecto, se puede usar **_Makefile.bat_**, este se encargará de buscar las herramientas de compilación de Visual Studio 2019 y realizará las verificaciones necesarias a los archivos del proyecto para iniciar la compilación.
 
 El resultado de la compilación siempre estará dentro de la carpeta ```build/```.
+
+### Compilar utilizando la línea de comandos 🖥️
+
+Los siguientes comandos deberían compilar el proyecto y guardarlo en la carpeta ```build/```. Esto siempre y cuando se ejecute desde una terminal con las herramientas de Visual Studio incluidas:
+
+```batch
+cd C:\ruta\del\proyecto\
+mkdir build && mkdir build\obj
+cl.exe /clr /Fe: C:\ruta\del\proyecto\build\main.exe /Fo: C:\ruta\del\proyecto\build\obj\ /I C:\ruta\del\proyecto\includes\ C:\ruta\del\proyecto\main.cpp
+```
+
+Para abrir una terminal con las herramientas de Visual Studio ya incluidas, se puede usar los atajos del menú inicio que se crean al instalar Visual Studio (_Standalone Build Tools_ o _Community/Professional/Enterprise_). Se pueden encontrar buscando "_Developer_" el menú de Windows:
+
+![Visual Studio 2019 Developer Command Prompt](assets/vsdevcmd.png)
+
+### Ajustes del compilador ⚙️
+
+- C++/CLI (```/clr```)
+- Name EXE File (```/Fe: ${workspaceFolder}/build/${fileBasenameNoExtension}.exe```)
+- Object File Name (```/Fo: ${workspaceFolder}/build/obj/```)
+- Include Paths (```/I ${workspaceFolder}/includes/```)
+- File Path (```${workspaceFolder}/main.cpp```)
 
 ## Archivos necesarios para la ejecución 🛠️
 
@@ -58,6 +73,7 @@ El resultado de la compilación siempre estará dentro de la carpeta ```build/``
 ## Documentación de apoyo 📚
 
 - [Microsoft C++, C, and Assembler documentation](https://docs.microsoft.com/en-us/cpp/?view=vs-2019)
+- [Microsoft Windows Console Documentation](https://docs.microsoft.com/en-us/windows/console/)
 - [C++ Reference](https://www.cplusplus.com/reference/)
 
 ## Autores ✒️
