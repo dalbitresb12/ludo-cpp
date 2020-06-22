@@ -164,10 +164,31 @@ namespace Utils {
          * Center text in screen
          * 
          * @param {string} text
+         * @param {bool} [newline = true]
+         * @param {int} [width = Console::WindowWidth]
+         * @param {int} [startX = 0]
+         * @param {int} [startY = Console::CursorTop]
          */
-        void Centered(string text) {
-            Console::SetCursorPosition((Console::WindowWidth - text.length()) / 2, Console::CursorTop);
-            cout << text << "\n";
+        void Centered(string text, bool newline = true, int width = Console::WindowWidth, int startX = 0, int startY = Console::CursorTop) {
+            Console::SetCursorPosition(startX + ((width - text.length()) / 2), startY);
+            cout << text;
+            if (newline) cout << "\n";
+        }
+
+        /**
+         * Clear specific line from Console
+         * 
+         * @param {int} x
+         * @param {int} y
+         * @param {int} width
+         */
+        void ClearLine(int x, int y, int width) {
+            Console::ResetColor();
+            Console::SetCursorPosition(x, y);
+            for (int i = 0; i < width; i++) {
+                cout << " ";
+            }
+            Console::SetCursorPosition(x, y);
         }
 
         /**

@@ -55,81 +55,61 @@ namespace Game {
          * @param {vector<pair<int, int>>} &ranking
          * @param {int} &random
          */
-        void Scoreboard(int &players, array<string, 4> &playerNames, int &current, array<ConsoleColor, 4> &playerColors, vector<pair<int, int>> &ranking, int &random, int timesPlayed[4]) {
+        void Scoreboard(int &players, array<string, 4> &playerNames, int &current, array<ConsoleColor, 4> &playerColors, vector<pair<int, int>> &ranking, int &random, int timesPlayed[4], bool showSelection) {
             // Variable definition
             int boardWidth = 81;
             int scoreboardWidth = Console::WindowWidth - boardWidth;
+            // Temporal string
             string str;
-            vector<string> main = { "===== PARTIDA =====", "", string("Turno de ").append(playerNames[current]) };
+            // Sort rankings vector
+            sort(ranking.begin(), ranking.end(), Utils::SortInRev);
+            // Get dice
             vector<string> dice = Dice::GetAscii(random);
 
-            // Sort and add rankings to vector
-            sort(ranking.begin(), ranking.end(), Utils::SortInRev);
-            main.push_back("");
-            main.push_back("===== RANKING =====");
-            main.push_back("");
+            Utils::Print::Centered("===== PARTIDA =====", false, scoreboardWidth, boardWidth, 2);
+
+            Utils::Print::ClearLine(boardWidth, 4, scoreboardWidth);
+            Console::ForegroundColor = playerColors[current];
+            Utils::Print::Centered(string("Turno de ").append(playerNames[current]), true, scoreboardWidth, boardWidth, 4);
+            Console::ResetColor();
+            
+            Utils::Print::Centered("===== DADO =====", true, scoreboardWidth, boardWidth, 6);
+            for (int i = 0; i < size(dice); i++) {
+                Utils::Print::Centered(dice[i], true, scoreboardWidth, boardWidth);
+            }
+
+            Utils::Print::ClearLine(boardWidth, 15, scoreboardWidth);
+            Utils::Print::ClearLine(boardWidth, 16, scoreboardWidth);
+            if (!showSelection) {
+                Utils::Print::Centered("Presione la tecla R", true, scoreboardWidth, boardWidth, 15);
+                Utils::Print::Centered("para girar el dado", true, scoreboardWidth, boardWidth, 16);
+            } else {
+                Utils::Print::Centered("Selecciona la ficha que deseas mover", true, scoreboardWidth, boardWidth, 15);
+                Utils::Print::Centered("usando las teclas 1, 2, 3 o 4", true, scoreboardWidth, boardWidth, 16);
+            }
+
+            Utils::Print::Centered("===== RANKING =====", true, scoreboardWidth, boardWidth, 18);
             for (int i = 0; i < players; i++) {
                 str = "";
                 str.append(to_string(i + 1)).append(". ").append(playerNames[ranking[i].second]);
                 str.append(" - ").append(to_string(ranking[i].first));
-                main.push_back(str);
+                Utils::Print::ClearLine(boardWidth, Console::CursorTop + 1, scoreboardWidth);
+                Console::ForegroundColor = playerColors[ranking[i].second];
+                Utils::Print::Centered(str, false, scoreboardWidth, boardWidth, Console::CursorTop);
             }
+            Console::ResetColor();
 
-            // Print times played
-            main.push_back("");
-            main.push_back("===== TURNOS JUGADOS =====");
-            main.push_back("");
+            Console::SetCursorPosition(Console::CursorLeft, Console::CursorTop + 2);
+            Utils::Print::Centered("===== TURNOS JUGADOS =====", true, scoreboardWidth, boardWidth);
             for (int i = 0; i < players; i++) {
                 str = "";
                 str.append(to_string(i + 1)).append(". ").append(playerNames[i]);
                 str.append(" - ").append(to_string(timesPlayed[i]));
-                main.push_back(str);
+                Utils::Print::ClearLine(boardWidth, Console::CursorTop + 1, scoreboardWidth);
+                Console::ForegroundColor = playerColors[ranking[i].second];
+                Utils::Print::Centered(str, false, scoreboardWidth, boardWidth, Console::CursorTop);
             }
-            
-            // Reset scoreboard
             Console::ResetColor();
-            for (int i = 0; i < Console::WindowHeight - 1; i++) {
-                Console::SetCursorPosition(boardWidth, i);
-                for (int j = 0; j < scoreboardWidth; j++) {
-                    cout << " ";
-                }
-            }
-
-            // Append last part of scoreboard
-            main.push_back("");
-            main.push_back("===== DADO =====");
-
-            // Print texts vector centered on the right side of the board
-            Console::SetCursorPosition(boardWidth, 2);
-            for (int i = 0; i < size(main); i++) {
-                Console::SetCursorPosition(boardWidth + ((scoreboardWidth - main[i].length()) / 2), Console::CursorTop);
-                if (i == 2) Console::ForegroundColor = playerColors[current];
-                else if (i >= 6 && i < (6 + players)) {
-                    Console::ForegroundColor = playerColors[ranking[i - 6].second];
-                } else if (i >= (9 + players) && i < (9 + 2 * players)) {
-                    Console::ForegroundColor = playerColors[i - (9 + players)];
-                }
-                cout << main[i] << "\n";
-                Console::ResetColor();
-            }
-
-            // Print Dice after scoreboard
-            Console::SetCursorPosition(Console::CursorLeft, Console::CursorTop + 1);
-            for (int i = 0; i < size(dice); i++) {
-                Console::SetCursorPosition(boardWidth + ((scoreboardWidth - dice[i].length()) / 2), Console::CursorTop);
-                cout << dice[i] << "\n";
-            }
-            
-            // Print last set of strings
-            vector<string> last = {
-                "Presione la tecla R",
-                "para girar el dado"
-            };
-            Console::SetCursorPosition(Console::CursorLeft, Console::CursorTop + 2);
-            for (int i = 0; i < size(last); i++) {
-                Console::SetCursorPosition(boardWidth + ((scoreboardWidth - last[i].length()) / 2), Console::CursorTop);
-                cout << last[i] << "\n";
-            }
         }
     }
 
@@ -183,7 +163,7 @@ namespace Game {
             Utils::ClearScreen();
             Menu::Print::Logo();
             cout << "\n";
-            Utils::Print::Centered("Ingrese el nombre del jugador " + to_string(i+1));
+            Utils::Print::Centered(string("Ingrese el nombre del jugador ").append(to_string(i+1)));
             cout << "\n\n";
             Utils::Print::Centered("Presione Enter para confirmar nombre");
             Utils::Print::Centered("El límite de caracteres es 20");
@@ -260,11 +240,12 @@ namespace Game {
         str.append(to_string(players));
         str.append(" jugadores");
 
+        Utils::ClearScreen();
+        Menu::Print::Logo();
+
         for (int i = 0; i < 4; i++) {
-            Utils::ClearScreen();
-            Menu::Print::Logo();
-            cout << "\n";
-            Utils::Print::Centered(str);
+            Utils::Print::ClearLine(0, 9, Console::WindowWidth);
+            Utils::Print::Centered(str, false, Console::WindowWidth, 0, 9);
             str.append(".");
             Sleep(1000);
         }
@@ -342,33 +323,13 @@ namespace Game {
             }
         }
 
-        pair<int, int> temp;
-
         // Set possible keys a user can use during the game loop
         const int possibleKeysSize = 2;
         const char possibleKeys[possibleKeysSize] = {'R', 'r'};
 
         // Start game loop
         while (!finished) {
-            temp.first = Console::CursorLeft;
-            temp.second = Console::CursorTop;
-            Console::SetCursorPosition(5, 33);
-            cout << "                                 ";
-            Console::SetCursorPosition(5, 33);
-            for (int i = 0; i < 4; i++) {
-                cout << playersOut[currentTurn][i] << " ";
-            }
-            Console::SetCursorPosition(5, 34);
-            cout << "                                 ";
-            Console::SetCursorPosition(5, 34);
-            cout << count(begin(playersOut[currentTurn]), end(playersOut[currentTurn]), true);
-            Console::SetCursorPosition(5, 35);
-            cout << "                                 ";
-            Console::SetCursorPosition(5, 35);
-            cout << currentTurn;
-            Console::SetCursorPosition(temp.first, temp.second);
-
-            Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random, timesPlayed);
+            Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random, timesPlayed, false);
             do {
                 key = _getch();
             } while (!Utils::CheckIfInCharArray(key, possibleKeys, possibleKeysSize));
@@ -386,27 +347,9 @@ namespace Game {
                     renderScoreboard = true;
                     do {
                         do {
-                            temp.first = Console::CursorLeft;
-                            temp.second = Console::CursorTop;
-                            Console::SetCursorPosition(5, 33);
-                            cout << "                                 ";
-                            Console::SetCursorPosition(5, 33);
-                            for (int i = 0; i < 4; i++) {
-                                cout << playersOut[currentTurn][i] << " ";
-                            }
-                            Console::SetCursorPosition(5, 34);
-                            cout << "                                 ";
-                            Console::SetCursorPosition(5, 34);
-                            cout << activePlayers;
-                            Console::SetCursorPosition(5, 35);
-                            cout << "                                 ";
-                            Console::SetCursorPosition(5, 35);
-                            cout << currentTurn;
-                            Console::SetCursorPosition(temp.first, temp.second);
-
                             if (renderScoreboard) {
                                 renderScoreboard = false;
-                                Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random, timesPlayed);
+                                Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random, timesPlayed, true);
                             }
                             key = _getch();
                             switch (key) {
@@ -428,8 +371,10 @@ namespace Game {
                             }
                         } while (!(selectedPlayer >= 0 && selectedPlayer <= 3));
                     } while ((!playersOut[currentTurn][selectedPlayer] && random != 6) && !(random == 6 && !playersOut[currentTurn][selectedPlayer]));
-                } else {
+                } else if (activePlayers == 1) {
                     selectedPlayer = distance(begin(playersOut[currentTurn]), find(begin(playersOut[currentTurn]), end(playersOut[currentTurn]), true));
+                } else {
+                    selectedPlayer = 0;
                 }
 
                 // Counter for times played of every player
@@ -460,15 +405,6 @@ namespace Game {
                             pair<int, int> *p = find(begin(playerCoords[i]), end(playerCoords[i]), playerCoords[currentTurn][selectedPlayer]);
                             if (p != end(playerCoords[i]) && *p == playerCoords[currentTurn][selectedPlayer]) {
                                 int d = distance(begin(playerCoords[i]), p);
-                                
-                                temp.first = Console::CursorLeft;
-                                temp.second = Console::CursorTop;
-                                Console::SetCursorPosition(5, 36);
-                                cout << "   ";
-                                Console::SetCursorPosition(5, 36);
-                                cout << d;
-                                Console::SetCursorPosition(temp.first, temp.second);
-
                                 playerCoords[i][d] = Movements::InitialPositions[i][d];
                                 playersOut[i][d] = false;
                             }
@@ -489,15 +425,6 @@ namespace Game {
                             pair<int, int> *p = find(begin(playerCoords[i]), end(playerCoords[i]), playerCoords[currentTurn][selectedPlayer]);
                             if (p != end(playerCoords[i]) && *p == playerCoords[currentTurn][selectedPlayer]) {
                                 int d = distance(begin(playerCoords[i]), p);
-
-                                temp.first = Console::CursorLeft;
-                                temp.second = Console::CursorTop;
-                                Console::SetCursorPosition(5, 36);
-                                cout << "   ";
-                                Console::SetCursorPosition(5, 36);
-                                cout << d;
-                                Console::SetCursorPosition(temp.first, temp.second);
-
                                 playerCoords[i][d] = Movements::InitialPositions[i][d];
                                 playersOut[i][d] = false;
                             }
@@ -529,7 +456,7 @@ namespace Game {
             reload = false;
         }
 
-        // Winner
+        // Show winner banner
 
         _getch();
     }
