@@ -81,7 +81,7 @@ namespace Game {
             Utils::Print::ClearLine(boardWidth, 15, scoreboardWidth);
             Utils::Print::ClearLine(boardWidth, 16, scoreboardWidth);
             if (!showSelection) {
-                Utils::Print::Centered("Presione la tecla R", true, scoreboardWidth, boardWidth, 15);
+                Utils::Print::Centered("Presione la tecla ESPACIO", true, scoreboardWidth, boardWidth, 15);
                 Utils::Print::Centered("para girar el dado", true, scoreboardWidth, boardWidth, 16);
             } else {
                 Utils::Print::Centered("Selecciona la ficha que deseas mover", true, scoreboardWidth, boardWidth, 15);
@@ -324,8 +324,8 @@ namespace Game {
         }
 
         // Set possible keys a user can use during the game loop
-        const int possibleKeysSize = 2;
-        const char possibleKeys[possibleKeysSize] = {'R', 'r'};
+        const int possibleKeysSize = 1;
+        const char possibleKeys[possibleKeysSize] = {32};
 
         // Start game loop
         while (!finished) {
@@ -334,7 +334,7 @@ namespace Game {
                 key = _getch();
             } while (!Utils::CheckIfInCharArray(key, possibleKeys, possibleKeysSize));
 
-            if (Utils::CheckIfChar(key, 'R') || Utils::CheckIfChar(key, 'r')) {
+            if (Utils::CheckIfChar(key, 32)) {
                 // Pre-calculate number of active players based on playersOut array
                 activePlayers = count(begin(playersOut[currentTurn]), end(playersOut[currentTurn]), true);
 
