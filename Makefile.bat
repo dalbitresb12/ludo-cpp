@@ -34,6 +34,13 @@ if exist includes\menu.h (
     echo ERROR: includes\menu.h not found!
 )
 
+if exist includes\movements.h (
+    echo SUCCESS: includes\movements.h found
+) else (
+    set UNFOUND=true
+    echo ERROR: includes\movements.h not found!
+)
+
 if exist includes\utils.h (
     echo SUCCESS: includes\utils.h found
 ) else (
@@ -59,10 +66,11 @@ exit 0
 :CHECKSUMS
 set UNMATCH=false
 set MAIN_SHA1=c8ecf05a7dd5832e434c371c3c745cd700b00cbc
-set DICEH_SHA1=ac3ec90a445fe6cc253d4ad01f013c162ca7d431
-set GAMEH_SHA1=ea1aeddd626a639eb7604375dbe98532e814de7c
-set MENUH_SHA1=6a8722e71fbdf8b2b570c5a42d074171f606c7c4
-set UTILSH_SHA1=ea35ea1409e242defe420626e56631a9c347e398
+set DICEH_SHA1=e31184bdaf3722ed2507f8b43b7b9a72b4e5207d
+set GAMEH_SHA1=0eb0e644b04210c72d5b6c4f7adcb8faa686f345
+set MENUH_SHA1=ff2b96f9232a11c54ef5019359957f5c85901c1f
+set MOVEMENTSH_SHA1=18390e095246a45b4c05c4663cc566d07620f5a1
+set UTILSH_SHA1=a785abce57faecceb820196618a5cc200585b7a3
 
 echo INFO: Checking project integrity...
 
@@ -134,6 +142,23 @@ if "%CHECK_TEST%"=="" (
     )
 )
 
+echo INFO: Testing includes\movements.h...
+set "CHECK_TEST=" & for /F "skip=1 delims=" %%H in ('
+    2^> nul CertUtil -hashfile includes\movements.h
+') do if not defined CHECK_TEST set "CHECK_TEST=%%H"
+
+if "%CHECK_TEST%"=="" (
+    echo WARN: Could not check hashes on includes\movements.h
+    echo WARN: Continuing anyways
+) else (
+    if "%MOVEMENTSH_SHA1%"=="%CHECK_TEST%" (
+        echo SUCCESS: includes\movements.h hashes match
+    ) else (
+        set UNMATCH=true
+        echo WARN: includes\movements.h hashes differ!
+    )
+)
+
 echo INFO: Testing includes\utils.h...
 set "CHECK_TEST=" & for /F "skip=1 delims=" %%H in ('
     2^> nul CertUtil -hashfile includes\utils.h
@@ -173,7 +198,7 @@ echo INFO: Set object output path to build\obj\
 echo INFO: Set output file to build\main.exe
 echo INFO: Set main.cpp as entry file
 echo.
-cl.exe /clr /Fe /I includes\ /Fo:build\obj\ main.cpp /link user32.lib /out:build\main.exe
+cl.exe /clr /Fe:build\main.exe /Fo:build\obj\ /I includes\ main.cpp
 echo.
 if exist "build\main.exe" (
     echo SUCCESS: Compilation output saved to build\main.exe
