@@ -218,11 +218,12 @@ namespace Game {
     /**
      * Comments pending
      */
-    void SetNewCoords(pair<int, int> &playerCoords, int current) {
+    void SetNewCoords(pair<int, int> &playerCoords, bool savedPlayers[4][4], int &selectedPlayer, int &current) {
         for (int j = 0; j < 4; j++) {
             if (Movements::SpecialMovements[j].first == current) {
                 if (Movements::SpecialMovements[j].second.first == playerCoords) {
                     playerCoords = Movements::SpecialMovements[j].second.second;
+                    savedPlayers[current][selectedPlayer] = true;
                     return;
                 }
             }
@@ -273,6 +274,32 @@ namespace Game {
     }
 
     /**
+     * Calculate movements left to win
+     */
+    int GetMovementsLeft(pair<int, int> playerCoords[4][4], bool savedPlayers[4][4], int &currentTurn, int &selectedPlayer) {
+        if (savedPlayers[currentTurn][selectedPlayer]) {
+            switch (currentTurn) {
+            case 0:
+                return abs(Movements::FinalPositions[currentTurn].first - playerCoords[currentTurn][selectedPlayer].first);
+                break;
+            case 1:
+                return abs(Movements::FinalPositions[currentTurn].second - playerCoords[currentTurn][selectedPlayer].second);
+                break;
+            case 2:
+                return abs(Movements::FinalPositions[currentTurn].first - playerCoords[currentTurn][selectedPlayer].first);
+                break;
+            case 3:
+                return abs(Movements::FinalPositions[currentTurn].second - playerCoords[currentTurn][selectedPlayer].second);
+                break;
+            default:
+                return 0;
+                break;
+            }
+        }
+        return 0;
+    }
+
+    /**
      * Main function on Game Module
      */
     void Start() {
@@ -282,6 +309,7 @@ namespace Game {
         // Variables definition
         // Two-dimension array for player coords
         pair<int, int> playerCoords[4][4];
+        // Sapve active players from each player
         bool playersOut[4][4] = { {false}, {false}, {false}, {false} };
         // Array to store player names
         array<string, 4> playerNames;
@@ -309,6 +337,12 @@ namespace Game {
         int activePlayers;
         // Vector to store rankings
         vector<pair<int, int>> ranking;
+        // Save players who have won
+        bool playersFinished[4][4] = { {false}, {false}, {false}, {false} };
+        // Players in finish line (the ones that are safe)
+        bool savedPlayers[4][4] = { {false}, {false}, {false}, {false} };
+        // Movements left for a player to win
+        int movementsLeft;
         // Array for player colors
         array<ConsoleColor, 4> playerColors = { ConsoleColor::Green, ConsoleColor::DarkRed, ConsoleColor::Blue, ConsoleColor::DarkYellow };
 
@@ -362,6 +396,8 @@ namespace Game {
                 // Generate random number for current turn
                 random = Utils::GetRandomNumber(1, 6);
 
+                movementsLeft = -1;
+
                 // Only run if player has more than 1 player on the board
                 // or player got a six and has at least 1 player on the board
                 if (activePlayers > 1 || (random == 6 && activePlayers > 0)) {
@@ -391,12 +427,19 @@ namespace Game {
                                     break;
                             }
                         } while (!(selectedPlayer >= 0 && selectedPlayer <= 3));
-                    } while ((!playersOut[currentTurn][selectedPlayer] && random != 6) && !(random == 6 && !playersOut[currentTurn][selectedPlayer]));
+
+                        if (savedPlayers[currentTurn][selectedPlayer])
+                            movementsLeft = GetMovementsLeft(playerCoords, savedPlayers, currentTurn, selectedPlayer);
+                    
+                    } while (!((playersOut[currentTurn][selectedPlayer] && random != 6 && !savedPlayers[currentTurn][selectedPlayer]) || (random == 6 && !savedPlayers[currentTurn][selectedPlayer]) || (savedPlayers[currentTurn][selectedPlayer] && movementsLeft >= random) || (playersFinished[currentTurn][selectedPlayer] && !savedPlayers[currentTurn][selectedPlayer])));
                 } else if (activePlayers == 1) {
                     selectedPlayer = distance(begin(playersOut[currentTurn]), find(begin(playersOut[currentTurn]), end(playersOut[currentTurn]), true));
                 } else {
-                    selectedPlayer = 0;
+                    selectedPlayer = distance(begin(playersFinished[currentTurn]), find(begin(playersFinished[currentTurn]), end(playersFinished[currentTurn]), false));
                 }
+
+                if (movementsLeft == -1)
+                    movementsLeft = GetMovementsLeft(playerCoords, savedPlayers, currentTurn, selectedPlayer);
 
                 // Counter for times played of every player
                 timesPlayed[currentTurn]++;
@@ -414,12 +457,23 @@ namespace Game {
                     sixCounter++;
                 }
 
+                if (savedPlayers[currentTurn][selectedPlayer] && activePlayers > 0 && movementsLeft >= random) {
+                    reload = true;
+                    for (int i = 0; i < random; i++) {
+                        SetNewCoords(playerCoords[currentTurn][selectedPlayer], savedPlayers, selectedPlayer, currentTurn);
+                    }
+                    if (movementsLeft == random) {
+                        playersFinished[currentTurn][selectedPlayer] = true;
+                        playersOut[currentTurn][selectedPlayer] = false;
+                    }
+                }
+
                 // Only run if dice says 6
                 // Gives the player the option to take a player out of jail
-                if (random == 6 && activePlayers < 4 && !playersOut[currentTurn][selectedPlayer]) {
+                if (random == 6 && activePlayers < 4 && !playersOut[currentTurn][selectedPlayer] && !savedPlayers[currentTurn][selectedPlayer]) {
                     playerCameOut = true;
                     reload = true;
-                    SetNewCoords(playerCoords[currentTurn][selectedPlayer], currentTurn);
+                    SetNewCoords(playerCoords[currentTurn][selectedPlayer], savedPlayers, selectedPlayer, currentTurn);
                     playersOut[currentTurn][selectedPlayer] = true;
                     SendPlayerToJail(playerCoords, playersOut, selectedPlayer, currentTurn, players);
                 }
@@ -427,10 +481,10 @@ namespace Game {
                 // Move the player the times the dice says and check if the new position
                 // already has another player, then send it to jail
                 // Only run if a player hasn't come out of jail in the previous turn
-                if (activePlayers > 0 && !playerCameOut) {
+                if (activePlayers > 0 && !playerCameOut && !savedPlayers[currentTurn][selectedPlayer]) {
                     reload = true;
                     for (int i = 0; i < random; i++) {
-                        SetNewCoords(playerCoords[currentTurn][selectedPlayer], currentTurn);
+                        SetNewCoords(playerCoords[currentTurn][selectedPlayer], savedPlayers, selectedPlayer, currentTurn);
                     }
                     SendPlayerToJail(playerCoords, playersOut, selectedPlayer, currentTurn, players);
                 }

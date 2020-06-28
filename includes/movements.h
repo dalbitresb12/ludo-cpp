@@ -110,4 +110,9 @@ namespace Movements {
         { make_pair(11, 11), make_pair(12, 11), make_pair(11, 12), make_pair(12, 12) },
         { make_pair(2, 11), make_pair(3, 11), make_pair(2, 12), make_pair(3, 12) }
     };
+
+    /**
+     * Final positions on board
+     */
+    pair<int, int> FinalPositions[4] = { make_pair(6, 7), make_pair(7, 6), make_pair(8, 7), make_pair(7, 8) };
 }
