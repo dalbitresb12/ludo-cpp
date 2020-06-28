@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
 #include <array>
 #include <algorithm>
 #include <windows.h>
@@ -27,7 +26,7 @@ namespace Game {
      */
     namespace Print {
         /**
-         * Print board based on two-dimensional color array
+         * @brief Print the board using the defined layout.
          */
         void Board() {
             for (int i = 0; i < 15; i++) {
@@ -45,39 +44,44 @@ namespace Game {
         }
 
         /**
-         * Print scoreboard without re-rendering board
-         * based on arguments.
+         * @brief Print scoreboard without re-rendering board.
          * 
-         * @param {int} &players
-         * @param {array<string, 4>} &playerNames
-         * @param {int} &current
-         * @param {array<ConsoleColor, 4>} &playerColors
-         * @param {vector<pair<int, int>>} &ranking
-         * @param {int} &random
+         * @param players The number of players.
+         * @param playerNames An array that has the names of each player.
+         * @param current The current turn.
+         * @param playerColors An array that has the colors of each player.
+         * @param ranking An array that has the current ranking.
+         * @param random The generated number used to print the dice.
          */
-        void Scoreboard(int &players, array<string, 4> &playerNames, int &current, array<ConsoleColor, 4> &playerColors, vector<pair<int, int>> &ranking, int &random, int timesPlayed[4], bool showSelection) {
-            // Variable definition
+        void Scoreboard(int &players, array<string, 4> &playerNames, int &current, array<ConsoleColor, 4> &playerColors, array<pair<int, int>, 4> &ranking, int &random, int timesPlayed[4], bool showSelection) {
+            // The width of the board
             int boardWidth = 81;
+            // The width the scoreboard can use
             int scoreboardWidth = Console::WindowWidth - boardWidth;
             // Temporal string
             string str;
-            // Sort rankings vector
+
+            // Sort rankings array
             sort(ranking.begin(), ranking.end(), Utils::SortInRev);
             // Get dice
-            vector<string> dice = Dice::GetAscii(random);
+            array<string, 7> dice = Dice::GetAscii(random);
 
+            // Header
             Utils::Print::Centered("===== PARTIDA =====", false, scoreboardWidth, boardWidth, 2);
 
+            // Show who's turn is
             Utils::Print::ClearLine(boardWidth, 4, scoreboardWidth);
             Console::ForegroundColor = playerColors[current];
             Utils::Print::Centered(string("Turno de ").append(playerNames[current]), true, scoreboardWidth, boardWidth, 4);
             Console::ResetColor();
             
+            // Print the dice
             Utils::Print::Centered("===== DADO =====", true, scoreboardWidth, boardWidth, 6);
             for (int i = 0; i < size(dice); i++) {
                 Utils::Print::Centered(dice[i], true, scoreboardWidth, boardWidth);
             }
 
+            // Print instructions
             Utils::Print::ClearLine(boardWidth, 15, scoreboardWidth);
             Utils::Print::ClearLine(boardWidth, 16, scoreboardWidth);
             if (!showSelection) {
@@ -88,6 +92,7 @@ namespace Game {
                 Utils::Print::Centered("usando las teclas 1, 2, 3 o 4", true, scoreboardWidth, boardWidth, 16);
             }
 
+            // Print ranking
             Utils::Print::Centered("===== RANKING =====", true, scoreboardWidth, boardWidth, 18);
             for (int i = 0; i < players; i++) {
                 str = "";
@@ -99,6 +104,7 @@ namespace Game {
             }
             Console::ResetColor();
 
+            // Print the turns each players has already played
             Console::SetCursorPosition(Console::CursorLeft, Console::CursorTop + 2);
             Utils::Print::Centered("===== TURNOS JUGADOS =====", true, scoreboardWidth, boardWidth);
             for (int i = 0; i < players; i++) {
@@ -114,90 +120,11 @@ namespace Game {
     }
 
     /**
-     * Sub-menu for getting the number of players.
-     * Returns 0 if ESC is pressed.
+     * Print a player based on coords and keeping original background colors from board.
      * 
-     * @return {int} players
-     */
-    int GetPlayers() {
-        vector<string> texts = {
-            "",
-            "Seleccione el número de jugadores:",
-            "( ) 2 jugadores",
-            "( ) 4 jugadores",
-            "",
-            "Use las flechas arriba y abajo para seleccionar",
-            " Presione Enter para seleccionar la opción marcada",
-            "Presione ESC para regresar al menú"
-        };
-        pair<int, int> ini = make_pair(((Console::WindowWidth / 2) - ((texts[2].length() / 2))), 9);
-        pair<int, int> min = make_pair(((Console::WindowWidth / 2) - ((texts[2].length() / 2))) - 1, 8);
-        pair<int, int> max = make_pair(((Console::WindowWidth / 2) - ((texts[3].length() / 2))) + 1, 11);
-
-        Utils::ClearScreen();
-        Menu::Print::Logo();
-        Utils::Print::StringVector(texts, true);
-        
-        pair<int, int> players = Utils::Selection('*', ini, min, max, true);
-        
-        if (players.first == 0 && players.second == 0) {
-            return 0;
-        }
-
-        switch (players.second) {
-            case 9: return 2;
-            case 10: return 4;
-            default: return 0;
-        }
-    }
-
-    /**
-     * Sub-menu for getting the player names
-     */
-    void GetPlayerNames(array<string, 4> &playerNames, int &players) {
-        int DEL = 8;
-        int ENTER = 13;
-        string name;
-        char key;
-        for (int i = 0; i < players; i++) {
-            Utils::ClearScreen();
-            Menu::Print::Logo();
-            cout << "\n";
-            Utils::Print::Centered(string("Ingrese el nombre del jugador ").append(to_string(i+1)));
-            cout << "\n\n";
-            Utils::Print::Centered("Presione Enter para confirmar nombre");
-            Utils::Print::Centered("El límite de caracteres es 20");
-            while (true) {
-                Console::SetCursorPosition(44, 9);
-                for (int i = 0; i < 40; i++) {
-                    cout << " ";
-                }
-                Console::SetCursorPosition(((Console::WindowWidth / 2) - (name.length() / 2)), 9);
-                Utils::Print::Centered(name);
-                key = _getch();
-                if (key == DEL && name.length() > 0) {
-                    name.pop_back();
-                } else if (key == ENTER) {
-                    if (name.length() > 0) {
-                        playerNames[i] = name;
-                        name = "";
-                        break;
-                    }
-                } else {
-                    if (name.length() <= 20) {
-                        name.push_back(key);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Game util to print a player based on coords and
-     * keeping original background colors from board
-     * 
-     * @param {pair<int, int>} &playerCoords
-     * @param {ConsoleColor} [playerColor = ConsoleColor::Black]
+     * @param playerCoords The coords in which the player should be printed.
+     * @param playerNumber The number of the player to be printed.
+     * @param playerColor An array that has the colors of each player.
      */
     void SetPlayerPosition(pair<int, int> &playerCoords, int &playerNumber, const ConsoleColor &playerColor = ConsoleColor::Black) {
         int x = (5 * (playerCoords.first + 1)) + 2;
@@ -216,17 +143,18 @@ namespace Game {
     }
 
     /**
-     * Comments pending
+     * @brief Finds the next position corresponding to the current position of a player and assign it.
+     * 
+     * @param playerCoords The current player coords, passed as a reference.
+     * @param savedPlayers current players' saved players.
+     * @param selectedPlayer The selected player that will move.
+     * @param current The current turn.
      */
-    void SetNewCoords(pair<int, int> &playerCoords, bool savedPlayers[4][4], int &selectedPlayer, int &current) {
-        for (int j = 0; j < 4; j++) {
-            if (Movements::SpecialMovements[j].first == current) {
-                if (Movements::SpecialMovements[j].second.first == playerCoords) {
-                    playerCoords = Movements::SpecialMovements[j].second.second;
-                    savedPlayers[current][selectedPlayer] = true;
-                    return;
-                }
-            }
+    void SetNewCoords(pair<int, int> &playerCoords, bool savedPlayers[4], int &selectedPlayer, int &current) {
+        if (Movements::SpecialMovements[current].first == playerCoords) {
+            playerCoords = Movements::SpecialMovements[current].second;
+            savedPlayers[selectedPlayer] = true;
+            return;
         }
         for (int i = 0; i < 88; i++) {
             if (Movements::Movements[i].first == playerCoords) {
@@ -237,26 +165,8 @@ namespace Game {
     }
 
     /**
-     * Sub-menu for a loading screen
-     */
-    void LoadingScreen(int &players) {
-        string str = "Preparando partida para ";
-        str.append(to_string(players));
-        str.append(" jugadores");
-
-        Utils::ClearScreen();
-        Menu::Print::Logo();
-
-        for (int i = 0; i < 4; i++) {
-            Utils::Print::ClearLine(0, 9, Console::WindowWidth);
-            Utils::Print::Centered(str, false, Console::WindowWidth, 0, 9);
-            str.append(".");
-            Sleep(1000);
-        }
-    }
-
-    /**
      * Comments pending
+     * TODO
      */
     bool SendPlayerToJail(pair<int, int> playerCoords[4][4], bool playersOut[4][4], int &selectedPlayer, int &currentTurn, int &players) {
         for (int i = 0; i < players; i++) {
@@ -275,6 +185,7 @@ namespace Game {
 
     /**
      * Calculate movements left to win
+     * TODO
      */
     int GetMovementsLeft(pair<int, int> playerCoords[4][4], bool savedPlayers[4][4], int &currentTurn, int &selectedPlayer) {
         if (savedPlayers[currentTurn][selectedPlayer]) {
@@ -300,16 +211,14 @@ namespace Game {
     }
 
     /**
-     * Main function on Game Module
+     * @brief Main function on Game Module
+     * TODO
      */
     void Start() {
-        // Just in case
-        Utils::ClearScreen();
-
         // Variables definition
         // Two-dimension array for player coords
         pair<int, int> playerCoords[4][4];
-        // Sapve active players from each player
+        // Save active players from each player
         bool playersOut[4][4] = { {false}, {false}, {false}, {false} };
         // Array to store player names
         array<string, 4> playerNames;
@@ -335,8 +244,8 @@ namespace Game {
         int random = 0;
         // Number of active players
         int activePlayers;
-        // Vector to store rankings
-        vector<pair<int, int>> ranking;
+        // Array to store rankings
+        array<pair<int, int>, 4> ranking;
         // Save players who have won
         bool playersFinished[4][4] = { {false}, {false}, {false}, {false} };
         // Players in finish line (the ones that are safe)
@@ -347,7 +256,7 @@ namespace Game {
         array<ConsoleColor, 4> playerColors = { ConsoleColor::Green, ConsoleColor::DarkRed, ConsoleColor::Blue, ConsoleColor::DarkYellow };
 
         // Get number of players
-        int players = GetPlayers();
+        int players = Menu::GetPlayers();
         // Exit menu if ESC is pressed
         if (players == 0) return;
 
@@ -360,12 +269,12 @@ namespace Game {
 
         // Set initial ranking based on number of players
         for (int i = 0; i < players; i++) {
-            ranking.push_back(make_pair(0, i));
+            ranking[i] = make_pair(0, i);
         }
 
         // Self-explanatory
-        GetPlayerNames(playerNames, players);
-        LoadingScreen(players);
+        Menu::GetPlayerNames(playerNames, players);
+        Menu::LoadingScreen(players);
 
         // Clear everything before printing board
         Utils::ClearScreen();
@@ -460,7 +369,7 @@ namespace Game {
                 if (savedPlayers[currentTurn][selectedPlayer] && activePlayers > 0 && movementsLeft >= random) {
                     reload = true;
                     for (int i = 0; i < random; i++) {
-                        SetNewCoords(playerCoords[currentTurn][selectedPlayer], savedPlayers, selectedPlayer, currentTurn);
+                        SetNewCoords(playerCoords[currentTurn][selectedPlayer], savedPlayers[currentTurn], selectedPlayer, currentTurn);
                     }
                     if (movementsLeft == random) {
                         playersFinished[currentTurn][selectedPlayer] = true;
@@ -473,7 +382,7 @@ namespace Game {
                 if (random == 6 && activePlayers < 4 && !playersOut[currentTurn][selectedPlayer] && !savedPlayers[currentTurn][selectedPlayer]) {
                     playerCameOut = true;
                     reload = true;
-                    SetNewCoords(playerCoords[currentTurn][selectedPlayer], savedPlayers, selectedPlayer, currentTurn);
+                    SetNewCoords(playerCoords[currentTurn][selectedPlayer], savedPlayers[currentTurn], selectedPlayer, currentTurn);
                     playersOut[currentTurn][selectedPlayer] = true;
                     SendPlayerToJail(playerCoords, playersOut, selectedPlayer, currentTurn, players);
                 }
@@ -484,7 +393,7 @@ namespace Game {
                 if (activePlayers > 0 && !playerCameOut && !savedPlayers[currentTurn][selectedPlayer]) {
                     reload = true;
                     for (int i = 0; i < random; i++) {
-                        SetNewCoords(playerCoords[currentTurn][selectedPlayer], savedPlayers, selectedPlayer, currentTurn);
+                        SetNewCoords(playerCoords[currentTurn][selectedPlayer], savedPlayers[currentTurn], selectedPlayer, currentTurn);
                     }
                     SendPlayerToJail(playerCoords, playersOut, selectedPlayer, currentTurn, players);
                 }

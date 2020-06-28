@@ -2,7 +2,6 @@
 // See: https://stackoverflow.com/a/13124002
 #pragma once
 
-#include <vector>
 #include <string>
 
 using namespace std;
@@ -11,7 +10,7 @@ using namespace std;
  * Dice Utils
  */
 namespace Dice {
-    vector<string> Dice_1 = {
+    array<string, 7> Dice_1 = {
         R"(    _______   )",
         R"(  /\       \  )",
         R"( /o \   o   \ )",
@@ -21,7 +20,7 @@ namespace Dice {
         R"(  \/______o/  )"
     };
 
-    vector<string> Dice_2 = {
+    array<string, 7> Dice_2 = {
         R"(    _______   )",
         R"(  /\ o     \  )",
         R"( /o \       \ )",
@@ -31,7 +30,7 @@ namespace Dice {
         R"(  \/_______/  )"
     };
 
-    vector<string> Dice_3 = {
+    array<string, 7> Dice_3 = {
         R"(    _______   )",
         R"(  /\ o     \  )",
         R"( /o \   o   \ )",
@@ -41,7 +40,7 @@ namespace Dice {
         R"(  \/_______/  )"
     };
 
-    vector<string> Dice_4 = {
+    array<string, 7> Dice_4 = {
         R"(    _______   )",
         R"(  /\ o    o\  )",
         R"( /o \       \ )",
@@ -51,7 +50,7 @@ namespace Dice {
         R"(  \/o_____o/  )"
     };
 
-    vector<string> Dice_5 = {
+    array<string, 7> Dice_5 = {
         R"(    _______   )",
         R"(  /\ o    o\  )",
         R"( /o \   o   \ )",
@@ -61,7 +60,7 @@ namespace Dice {
         R"(  \/_______/  )"
     };
 
-    vector<string> Dice_6 = {
+    array<string, 7> Dice_6 = {
         R"(    _______   )",
         R"(  /\ o  o o\  )",
         R"( /o \       \ )",
@@ -72,13 +71,13 @@ namespace Dice {
     };
 
     /**
-     * Get ASCII art of specific dice
+     * @brief Get ASCII art of a dice from a random number.
      * 
-     * @param {int} [n = 6]
-     * @return {vector<string>} dice
+     * @param random The number the dice should show.
+     * @return The dice string array. 
      */
-    vector<string> GetAscii(int n = 0) {
-        switch (n) {
+    array<string, 7> GetAscii(int random = 0) {
+        switch (random) {
             case 1: return Dice_1; break;
             case 2: return Dice_2; break;
             case 3: return Dice_3; break;

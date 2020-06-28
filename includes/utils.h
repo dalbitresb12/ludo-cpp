@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
 #include <windows.h>
 #include <conio.h>
 
@@ -17,9 +16,9 @@ using namespace System;
  */
 namespace Utils {
     /**
-     * Clear screen with fill character
+     * @brief Clear screen with fill character.
      * 
-     * @param {char} [fill = ' ']
+     * @param fill The character to use as a fill.
      */
     void ClearScreen(char fill = ' ') {
         // Set initial coords on Console
@@ -41,14 +40,14 @@ namespace Utils {
     }
 
     /**
-     * Starts a selection from initial in range min-max
+     * @brief Starts a selection from initial in the range of min-max.
      * 
-     * @param {char} c
-     * @param {pair<int, int>} initial
-     * @param {pair<int, int>} min
-     * @param {pair<int, int>} max
-     * @param {bool} [esc = false]
-     * @return {pair<int, int>} current
+     * @param c The character to be printed as the selector.
+     * @param initial The initial pair of coords when the function starts.
+     * @param min The min pair of coords in which the user can move the character.
+     * @param max The max pair of coords in which the user can move the character.
+     * @param esc If the function should accept ESC to exit.
+     * @return The current pair of coords in which the user pressed ENTER.
      */
     pair<int, int> Selection(char c, pair<int, int> initial, pair<int, int> min, pair<int, int> max, bool esc = false) {
         int ARRIBA = 72;
@@ -99,7 +98,7 @@ namespace Utils {
     }
 
     /**
-     * Wait until escape key is pressed by user
+     * @brief Wait until ESCAPE key is pressed by user.
      */
     void WaitEscape() {
         int ESCAPE = 27;
@@ -113,44 +112,45 @@ namespace Utils {
     }
 
     /**
-     * Check if a char variable is equal to another char
+     * @brief Check if a char variable is equal to another char.
      * 
-     * @param {char} &key
-     * @param {char} c
-     * @return {bool} true or false
+     * @param key The variable of the key the user pressed.
+     * @param c The expected key to be pressed.
+     * @return True if both are the same, otherwise false.
      */
     bool CheckIfChar(char &key, char c) {
         return (int)key == (int)c;
     }
 
     /**
-     * Check if the key is one of the keys in the array
+     * @brief Check if the key is one of the keys in the array.
      * 
-     * @param {char} &key
-     * @param {const char} keys[]
-     * @param {const int} &size
+     * @param key The variable of the key the user pressed.
+     * @param keys The array of accepted keys.
+     * @param size The size of the array of accepted keys.
+     * @return True if the key was found in the array, otherwise false.
      */
     bool CheckIfInCharArray(char &key, const char keys[], const int &size) {
-        for (int i = 0; i < size; i++) {
-            if (keys[i] == key) return true;
-        }
-        return false;
+        const char *p = find(keys, keys + size, key);
+        return p != (keys + size);
     }
 
     /**
-     * Get a random number between min and max
+     * @brief Generate a random number between min and max using rand().
      * 
-     * @param {int} min
-     * @param {int} max
-     * @return {int} value
+     * @param min The min value to generate.
+     * @param max The max value to generate.
+     * @return The generated value.
      */
     int GetRandomNumber(int min, int max) {
         return rand() % max + min;
     }
 
     /**
-     * Sort an array or vector of pairs by first element
-     * of pair using sort() in descending order
+     * @brief Sort an array of pairs by first element of pair using sort() in descending order.
+     * 
+     * @param a The first pair.
+     * @param b The second pair.
      */
     bool SortInRev(pair<int, int> &a, pair<int, int> &b) {
         return a.first > b.first;
@@ -161,26 +161,26 @@ namespace Utils {
      */
     namespace Print {
         /**
-         * Center text in screen
+         * @brief Center string in screen window or an specific width.
          * 
-         * @param {string} text
-         * @param {bool} [newline = true]
-         * @param {int} [width = Console::WindowWidth]
-         * @param {int} [startX = 0]
-         * @param {int} [startY = Console::CursorTop]
+         * @param text The string to print.
+         * @param newLine If we should print a new line after the printed text.
+         * @param width The width of the window or space in which the text should be centered.
+         * @param startX The starting position on the x-axis.
+         * @param startY The starting position on the y-axis.
          */
-        void Centered(string text, bool newline = true, int width = Console::WindowWidth, int startX = 0, int startY = Console::CursorTop) {
+        void Centered(string text, bool newLine = true, int width = Console::WindowWidth, int startX = 0, int startY = Console::CursorTop) {
             Console::SetCursorPosition(startX + ((width - text.length()) / 2), startY);
             cout << text;
-            if (newline) cout << "\n";
+            if (newLine) cout << "\n";
         }
 
         /**
-         * Clear specific line from Console
+         * @brief Clear specific line from Console.
          * 
-         * @param {int} x
-         * @param {int} y
-         * @param {int} width
+         * @param x The starting position on the x-axis.
+         * @param y The starting position on the y-axis.
+         * @param width The width of the line to clear.
          */
         void ClearLine(int x, int y, int width) {
             Console::ResetColor();
@@ -192,15 +192,16 @@ namespace Utils {
         }
 
         /**
-         * Print every object in vector
+         * @brief Prints every string object in an array.
          * 
-         * @param {vector<string>} t
-         * @param {bool} [center = false]
+         * @param msg The string array to print.
+         * @param size The size of the array.
+         * @param center If the printing should be centered.
          */
-        void StringVector(vector<string> &t, bool center = false) {
-            for (int i = 0; i < size(t); i++) {
-                if (center) Print::Centered(t[i]);
-                else cout << t[i] << "\n";
+        void StringArray(string msg[], int size, bool center = false) {
+            for (int i = 0; i < size; i++) {
+                if (center) Print::Centered(msg[i]);
+                else cout << msg[i] << "\n";
             }
         }
     }

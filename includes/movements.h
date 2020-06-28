@@ -12,8 +12,7 @@ using namespace System;
  */
 namespace Movements {
     /**
-     * Board colors definition
-     * Two-dimension array 15x15
+     * @brief Board layout definition.
      */
     ConsoleColor BoardColors[15][15] = {
         {ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::Green, ConsoleColor::White, ConsoleColor::White, ConsoleColor::White, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed, ConsoleColor::DarkRed},
@@ -34,8 +33,8 @@ namespace Movements {
     };
 
     /**
-     * Movements definitions
-     * Relationship between initial pos and final pos
+     * @brief Movements definitions.
+     * @details Relationship between initial pos and final pos.
      */
     pair<pair<int, int>, pair<int, int>> Movements[88] = {
         make_pair(make_pair(6, 0), make_pair(7, 0)),
@@ -91,18 +90,18 @@ namespace Movements {
     };
 
     /**
-     * Special movements according to player color
+     * @brief Special movements according to player color.
      * @see playerColors array on game.h
      */
-    pair<int, pair<pair<int, int>, pair<int, int>>> SpecialMovements[4] = {
-        make_pair(0, make_pair(make_pair(0, 7), make_pair(1, 7))),
-        make_pair(1, make_pair(make_pair(7, 0), make_pair(7, 1))),
-        make_pair(2, make_pair(make_pair(14, 7), make_pair(13, 7))),
-        make_pair(3, make_pair(make_pair(7, 14), make_pair(7, 13)))
+    pair<pair<int, int>, pair<int, int>> SpecialMovements[4] = {
+        make_pair(make_pair(0, 7), make_pair(1, 7)),
+        make_pair(make_pair(7, 0), make_pair(7, 1)),
+        make_pair(make_pair(14, 7), make_pair(13, 7)),
+        make_pair(make_pair(7, 14), make_pair(7, 13))
     };
 
     /**
-     * Initial positions on board
+     * @brief Initial positions on board.
      */
     pair<int, int> InitialPositions[4][4] = {
         { make_pair(2, 2), make_pair(3, 2), make_pair(2, 3), make_pair(3, 3) },
@@ -112,7 +111,7 @@ namespace Movements {
     };
 
     /**
-     * Final positions on board
+     * @brief Final positions on board.
      */
     pair<int, int> FinalPositions[4] = { make_pair(6, 7), make_pair(7, 6), make_pair(8, 7), make_pair(7, 8) };
 }
