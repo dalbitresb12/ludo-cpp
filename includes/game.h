@@ -215,6 +215,9 @@ namespace Game {
         Console::ResetColor();
     }
 
+    /**
+     * Comments pending
+     */
     void SetNewCoords(pair<int, int> &playerCoords, int current) {
         for (int j = 0; j < 4; j++) {
             if (Movements::SpecialMovements[j].first == current) {
@@ -249,6 +252,24 @@ namespace Game {
             str.append(".");
             Sleep(1000);
         }
+    }
+
+    /**
+     * Comments pending
+     */
+    bool SendPlayerToJail(pair<int, int> playerCoords[4][4], bool playersOut[4][4], int &selectedPlayer, int &currentTurn, int &players) {
+        for (int i = 0; i < players; i++) {
+            if (i != currentTurn) {
+                pair<int, int> *p = find(begin(playerCoords[i]), end(playerCoords[i]), playerCoords[currentTurn][selectedPlayer]);
+                if (p != end(playerCoords[i]) && *p == playerCoords[currentTurn][selectedPlayer]) {
+                    int d = distance(begin(playerCoords[i]), p);
+                    playerCoords[i][d] = Movements::InitialPositions[i][d];
+                    playersOut[i][d] = false;
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -400,16 +421,7 @@ namespace Game {
                     reload = true;
                     SetNewCoords(playerCoords[currentTurn][selectedPlayer], currentTurn);
                     playersOut[currentTurn][selectedPlayer] = true;
-                    for (int i = 0; i < players; i++) {
-                        if (i != currentTurn) {
-                            pair<int, int> *p = find(begin(playerCoords[i]), end(playerCoords[i]), playerCoords[currentTurn][selectedPlayer]);
-                            if (p != end(playerCoords[i]) && *p == playerCoords[currentTurn][selectedPlayer]) {
-                                int d = distance(begin(playerCoords[i]), p);
-                                playerCoords[i][d] = Movements::InitialPositions[i][d];
-                                playersOut[i][d] = false;
-                            }
-                        }
-                    }
+                    SendPlayerToJail(playerCoords, playersOut, selectedPlayer, currentTurn, players);
                 }
 
                 // Move the player the times the dice says and check if the new position
@@ -420,16 +432,7 @@ namespace Game {
                     for (int i = 0; i < random; i++) {
                         SetNewCoords(playerCoords[currentTurn][selectedPlayer], currentTurn);
                     }
-                    for (int i = 0; i < players; i++) {
-                        if (i != currentTurn) {
-                            pair<int, int> *p = find(begin(playerCoords[i]), end(playerCoords[i]), playerCoords[currentTurn][selectedPlayer]);
-                            if (p != end(playerCoords[i]) && *p == playerCoords[currentTurn][selectedPlayer]) {
-                                int d = distance(begin(playerCoords[i]), p);
-                                playerCoords[i][d] = Movements::InitialPositions[i][d];
-                                playersOut[i][d] = false;
-                            }
-                        }
-                    }
+                    SendPlayerToJail(playerCoords, playersOut, selectedPlayer, currentTurn, players);
                 }
 
                 // Reload board only when a change has happened
