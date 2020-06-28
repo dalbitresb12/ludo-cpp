@@ -12,8 +12,8 @@ using namespace std;
 using namespace System;
 
 /**
- * Menu Module
- * This has the entire logic for the main menu
+ * Menu Module.
+ * This has the entire logic for the main menu.
  */
 namespace Menu {
     namespace Print {
@@ -33,6 +33,26 @@ namespace Menu {
                 R"(    \/___/   \/_____/\/___/  \/_____/)"
             };
             Utils::Print::StringArray(logo, 7, center);
+        }
+
+        /**
+         * @brief Print game winner trophy. This logo has 9 lines.
+         * 
+         * @param center If the logo should be centered.
+         */
+        void Trophy(bool center = true) {
+            string trophy[] = {
+                R"( .-=========-. )",
+                R"( \'-=======-'/ )",
+                R"( _|   .=.   |_ )",
+                R"(((|  {{1}}  |)))",
+                R"( \|   /|\   |/ )",
+                R"(  \__ '`' __/  )",
+                R"(    _`) (`_    )",
+                R"(  _/_______\_  )",
+                R"( /___________\ )"
+            };
+            Utils::Print::StringArray(trophy, 9, center);
         }
     }
 
@@ -176,7 +196,7 @@ namespace Menu {
     }
 
     /**
-     * @brief Sub-menu for getting the player names
+     * @brief Sub-menu for getting the player names.
      * 
      * @param playerNames The array to store each player name.
      * @param players The number of players that were seleted.
@@ -220,7 +240,7 @@ namespace Menu {
     }
 
     /**
-     * @brief Sub-menu for a loading screen
+     * @brief Sub-menu for a loading screen.
      * 
      * @param players The number of players to show.
      */
@@ -238,5 +258,19 @@ namespace Menu {
             str.append(".");
             Sleep(1000);
         }
+    }
+
+    void ShowWinner(string &playerName, ConsoleColor &playerColor) {
+        Utils::ClearScreen();
+        Menu::Print::Logo();
+        Console::SetCursorPosition(Console::CursorLeft, Console::CursorTop + 1);
+        Console::ForegroundColor = playerColor;
+        Menu::Print::Trophy();
+        Console::SetCursorPosition(Console::CursorLeft, Console::CursorTop + 1);
+        Utils::Print::Centered(string("¡Felicidades, ").append(playerName).append("!"));
+        Console::ResetColor();
+        Console::SetCursorPosition(Console::CursorLeft, Console::CursorTop + 1);
+        Utils::Print::Centered("Presione ESC para regresar al menú");
+        Utils::WaitEscape();
     }
 }

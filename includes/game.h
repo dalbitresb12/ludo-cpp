@@ -185,22 +185,22 @@ namespace Game {
 
     /**
      * Calculate movements left to win
-     * TODO
+     * TODO OPTIMIZE ARGUMENTS
      */
-    int GetMovementsLeft(pair<int, int> playerCoords[4][4], bool savedPlayers[4][4], int &currentTurn, int &selectedPlayer) {
-        if (savedPlayers[currentTurn][selectedPlayer]) {
+    int GetMovementsLeft(pair<int, int> playerCoords[4], bool savedPlayers[4], int &currentTurn, int &selectedPlayer) {
+        if (savedPlayers[selectedPlayer]) {
             switch (currentTurn) {
             case 0:
-                return abs(Movements::FinalPositions[currentTurn].first - playerCoords[currentTurn][selectedPlayer].first);
+                return abs(Movements::FinalPositions[currentTurn].first - playerCoords[selectedPlayer].first);
                 break;
             case 1:
-                return abs(Movements::FinalPositions[currentTurn].second - playerCoords[currentTurn][selectedPlayer].second);
+                return abs(Movements::FinalPositions[currentTurn].second - playerCoords[selectedPlayer].second);
                 break;
             case 2:
-                return abs(Movements::FinalPositions[currentTurn].first - playerCoords[currentTurn][selectedPlayer].first);
+                return abs(Movements::FinalPositions[currentTurn].first - playerCoords[selectedPlayer].first);
                 break;
             case 3:
-                return abs(Movements::FinalPositions[currentTurn].second - playerCoords[currentTurn][selectedPlayer].second);
+                return abs(Movements::FinalPositions[currentTurn].second - playerCoords[selectedPlayer].second);
                 break;
             default:
                 return 0;
@@ -208,6 +208,16 @@ namespace Game {
             }
         }
         return 0;
+    }
+
+    int GetMovablePlayers(pair<int, int> playerCoords[4], bool savedPlayers[4], bool playersOut[4], bool playersFinished[4], int &current, int &selectedPlayer, int &random) {
+        int movable = 0;
+        for (int i = 0; i < 4; i++) {
+            if (savedPlayers[i]) { if (GetMovementsLeft(playerCoords, savedPlayers, current, i) >= random) movable++; }
+            else if (random == 6 && !playersFinished[i]) movable++;
+            else if (random != 6 && playersOut[i] && !playersFinished[i]) movable++;
+        }
+        return movable;
     }
 
     /**
@@ -294,6 +304,7 @@ namespace Game {
         // Start game loop
         while (!finished) {
             Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random, timesPlayed, false);
+
             do {
                 key = _getch();
             } while (!Utils::CheckIfInCharArray(key, possibleKeys, possibleKeysSize));
@@ -309,7 +320,7 @@ namespace Game {
 
                 // Only run if player has more than 1 player on the board
                 // or player got a six and has at least 1 player on the board
-                if (activePlayers > 1 || (random == 6 && activePlayers > 0)) {
+                if (GetMovablePlayers(playerCoords[currentTurn], savedPlayers[currentTurn], playersOut[currentTurn], playersFinished[currentTurn], currentTurn, selectedPlayer, random) > 1) {
                     renderScoreboard = true;
                     do {
                         do {
@@ -338,7 +349,7 @@ namespace Game {
                         } while (!(selectedPlayer >= 0 && selectedPlayer <= 3));
 
                         if (savedPlayers[currentTurn][selectedPlayer])
-                            movementsLeft = GetMovementsLeft(playerCoords, savedPlayers, currentTurn, selectedPlayer);
+                            movementsLeft = GetMovementsLeft(playerCoords[currentTurn], savedPlayers[currentTurn], currentTurn, selectedPlayer);
                     
                     } while (!((playersOut[currentTurn][selectedPlayer] && random != 6 && !savedPlayers[currentTurn][selectedPlayer]) || (random == 6 && !savedPlayers[currentTurn][selectedPlayer]) || (savedPlayers[currentTurn][selectedPlayer] && movementsLeft >= random) || (playersFinished[currentTurn][selectedPlayer] && !savedPlayers[currentTurn][selectedPlayer])));
                 } else if (activePlayers == 1) {
@@ -348,7 +359,7 @@ namespace Game {
                 }
 
                 if (movementsLeft == -1)
-                    movementsLeft = GetMovementsLeft(playerCoords, savedPlayers, currentTurn, selectedPlayer);
+                    movementsLeft = GetMovementsLeft(playerCoords[currentTurn], savedPlayers[currentTurn], currentTurn, selectedPlayer);
 
                 // Counter for times played of every player
                 timesPlayed[currentTurn]++;
@@ -366,6 +377,7 @@ namespace Game {
                     sixCounter++;
                 }
 
+                // Player enters safe zone
                 if (savedPlayers[currentTurn][selectedPlayer] && activePlayers > 0 && movementsLeft >= random) {
                     reload = true;
                     for (int i = 0; i < random; i++) {
@@ -373,6 +385,11 @@ namespace Game {
                     }
                     if (movementsLeft == random) {
                         playersFinished[currentTurn][selectedPlayer] = true;
+                        for (int i = 0; i < players; i++) {
+                            if (ranking[i].second == currentTurn) {
+                                ranking[i].first = count(begin(playersFinished[currentTurn]), end(playersFinished[currentTurn]), true);
+                            }
+                        }
                         playersOut[currentTurn][selectedPlayer] = false;
                     }
                 }
@@ -408,6 +425,9 @@ namespace Game {
                     }
                 }
 
+                // Exit loop if current player won
+                if (count(begin(playersFinished[currentTurn]), end(playersFinished[currentTurn]), true) == 4) break;
+
                 // Change turn to next person and reset six counter
                 if (random != 6) {
                     sixCounter = 0;
@@ -421,9 +441,8 @@ namespace Game {
             selectedPlayer = 0;
             reload = false;
         }
-
-        // Show winner banner
-
-        _getch();
+        
+        // Show winner
+        Menu::ShowWinner(playerNames[currentTurn], playerColors[currentTurn]);
     }
 }
