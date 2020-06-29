@@ -123,19 +123,6 @@ namespace Utils {
     }
 
     /**
-     * @brief Check if the key is one of the keys in the array.
-     * 
-     * @param key The variable of the key the user pressed.
-     * @param keys The array of accepted keys.
-     * @param size The size of the array of accepted keys.
-     * @return True if the key was found in the array, otherwise false.
-     */
-    bool CheckIfInCharArray(char &key, const char keys[], const int &size) {
-        const char *p = find(keys, keys + size, key);
-        return p != (keys + size);
-    }
-
-    /**
      * @brief Generate a random number between min and max using rand().
      * 
      * @param min The min value to generate.

@@ -337,32 +337,20 @@ namespace Game {
             }
         }
 
-        // Set possible keys a user can use during the game loop
-        const int possibleKeysSize = 3;
-        const char possibleKeys[possibleKeysSize] = {32, 'D', 'd'};
-
         // Start game loop
         while (!finished) {
             Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random, timesPlayed, false);
 
             do {
                 key = _getch();
-            } while (!Utils::CheckIfInCharArray(key, possibleKeys, possibleKeysSize));
+            } while (!Utils::CheckIfChar(key, 32));
 
-            if (Utils::CheckIfChar(key, 32) || Utils::CheckIfChar(key, 'd') || Utils::CheckIfChar(key, 'D')) {
+            if (Utils::CheckIfChar(key, 32)) {
                 // Pre-calculate number of active players based on playersOut array
                 activePlayers = count(begin(playersOut[currentTurn]), end(playersOut[currentTurn]), true);
 
                 // Generate random number for current turn
-                if (Utils::CheckIfChar(key, 'D') || Utils::CheckIfChar(key, 'd')) {
-                    Utils::Print::ClearLine(5, 32, 20);
-                    Console::SetCursorPosition(5, 32);
-                    cout << "waiting for key";
-                    random = (int)_getch() - 48;
-                    Utils::Print::ClearLine(5, 32, 20);
-                } else {
-                    random = Utils::GetRandomNumber(1, 6);
-                }
+                random = Utils::GetRandomNumber(1, 6);
 
                 // Counter for times played of every player
                 timesPlayed[currentTurn]++;
