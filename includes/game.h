@@ -165,14 +165,20 @@ namespace Game {
     }
 
     /**
-     * Comments pending
-     * TODO
+     * @brief Checks whether a token must go to jail again because an enemy token ocupied its position.
+     * 
+     * @param playerCoords An array that has the coords of each token of an specific player.
+     * @param playersOut An array that has whether a token has already come out of jail.
+     * @param selectedPlayer The selected player that will move.
+     * @param current The current turn (the active player).
+     * @param players The number of players in the current game.
+     * @return True if a token was sent to jail, otherwise false.
      */
-    bool SendPlayerToJail(pair<int, int> playerCoords[4][4], bool playersOut[4][4], int &selectedPlayer, int &currentTurn, int &players) {
+    bool SendTokenToJail(pair<int, int> playerCoords[4][4], bool playersOut[4][4], int &selectedPlayer, int &current, int &players) {
         for (int i = 0; i < players; i++) {
-            if (i != currentTurn) {
-                pair<int, int> *p = find(begin(playerCoords[i]), end(playerCoords[i]), playerCoords[currentTurn][selectedPlayer]);
-                if (p != end(playerCoords[i]) && *p == playerCoords[currentTurn][selectedPlayer]) {
+            if (i != current) {
+                pair<int, int> *p = find(begin(playerCoords[i]), end(playerCoords[i]), playerCoords[current][selectedPlayer]);
+                if (p != end(playerCoords[i]) && *p == playerCoords[current][selectedPlayer]) {
                     int d = distance(begin(playerCoords[i]), p);
                     playerCoords[i][d] = Movements::InitialPositions[i][d];
                     playersOut[i][d] = false;
@@ -184,23 +190,28 @@ namespace Game {
     }
 
     /**
-     * Calculate movements left to win
-     * TODO OPTIMIZE ARGUMENTS
+     * @brief Calculate movements left for a token to enter the safe zone.
+     * 
+     * @param playerCoords An array that has the coords of each token of an specific player.
+     * @param savedPlayers An array that has the tokens a player has already saved (almost finishing).
+     * @param current The current turn (the active player).
+     * @param selectedPlayer The selected player that will move.
+     * @return The number of movements for a token.
      */
-    int GetMovementsLeft(pair<int, int> playerCoords[4], bool savedPlayers[4], int &currentTurn, int &selectedPlayer) {
+    int GetMovementsLeft(pair<int, int> playerCoords[4], bool savedPlayers[4], int &current, int &selectedPlayer) {
         if (savedPlayers[selectedPlayer]) {
-            switch (currentTurn) {
+            switch (current) {
             case 0:
-                return abs(Movements::FinalPositions[currentTurn].first - playerCoords[selectedPlayer].first);
+                return abs(Movements::FinalPositions[current].first - playerCoords[selectedPlayer].first);
                 break;
             case 1:
-                return abs(Movements::FinalPositions[currentTurn].second - playerCoords[selectedPlayer].second);
+                return abs(Movements::FinalPositions[current].second - playerCoords[selectedPlayer].second);
                 break;
             case 2:
-                return abs(Movements::FinalPositions[currentTurn].first - playerCoords[selectedPlayer].first);
+                return abs(Movements::FinalPositions[current].first - playerCoords[selectedPlayer].first);
                 break;
             case 3:
-                return abs(Movements::FinalPositions[currentTurn].second - playerCoords[selectedPlayer].second);
+                return abs(Movements::FinalPositions[current].second - playerCoords[selectedPlayer].second);
                 break;
             default:
                 return 0;
@@ -210,7 +221,18 @@ namespace Game {
         return 0;
     }
 
-    int GetMovablePlayers(pair<int, int> playerCoords[4], bool savedPlayers[4], bool playersOut[4], bool playersFinished[4], int &current, int &selectedPlayer, int &random) {
+    /**
+     * @brief Calculate the number of tokens a player has available to move.
+     * 
+     * @param playerCoords An array that has the coords of each token of an specific player.
+     * @param savedPlayers An array that has the tokens a player has already saved (almost finishing).
+     * @param playersOut An array that has whether a token has already come out of jail.
+     * @param playersFinished An array that has whether a token has already won.
+     * @param current The current turn (the active player).
+     * @param random The number generated randomly for the dice.
+     * @return The number of tokens a player can move.
+     */
+    int GetMovableTokens(pair<int, int> playerCoords[4], bool savedPlayers[4], bool playersOut[4], bool playersFinished[4], int &current, int &random) {
         int movable = 0;
         for (int i = 0; i < 4; i++) {
             if (savedPlayers[i]) { if (GetMovementsLeft(playerCoords, savedPlayers, current, i) >= random) movable++; }
@@ -221,8 +243,7 @@ namespace Game {
     }
 
     /**
-     * @brief Main function on Game Module
-     * TODO
+     * @brief Main function of the game logic.
      */
     void Start() {
         // Variables definition
@@ -320,7 +341,7 @@ namespace Game {
 
                 // Only run if player has more than 1 player on the board
                 // or player got a six and has at least 1 player on the board
-                if (GetMovablePlayers(playerCoords[currentTurn], savedPlayers[currentTurn], playersOut[currentTurn], playersFinished[currentTurn], currentTurn, selectedPlayer, random) > 1) {
+                if (GetMovableTokens(playerCoords[currentTurn], savedPlayers[currentTurn], playersOut[currentTurn], playersFinished[currentTurn], currentTurn, random) > 1) {
                     renderScoreboard = true;
                     do {
                         do {
@@ -401,7 +422,7 @@ namespace Game {
                     reload = true;
                     SetNewCoords(playerCoords[currentTurn][selectedPlayer], savedPlayers[currentTurn], selectedPlayer, currentTurn);
                     playersOut[currentTurn][selectedPlayer] = true;
-                    SendPlayerToJail(playerCoords, playersOut, selectedPlayer, currentTurn, players);
+                    SendTokenToJail(playerCoords, playersOut, selectedPlayer, currentTurn, players);
                 }
 
                 // Move the player the times the dice says and check if the new position
@@ -412,7 +433,7 @@ namespace Game {
                     for (int i = 0; i < random; i++) {
                         SetNewCoords(playerCoords[currentTurn][selectedPlayer], savedPlayers[currentTurn], selectedPlayer, currentTurn);
                     }
-                    SendPlayerToJail(playerCoords, playersOut, selectedPlayer, currentTurn, players);
+                    SendTokenToJail(playerCoords, playersOut, selectedPlayer, currentTurn, players);
                 }
 
                 // Reload board only when a change has happened
