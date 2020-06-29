@@ -48,17 +48,19 @@ namespace Game {
          * 
          * @param players The number of players.
          * @param playerNames An array that has the names of each player.
-         * @param current The current turn.
+         * @param current The current player (the active player).
          * @param playerColors An array that has the colors of each player.
          * @param ranking An array that has the current ranking.
          * @param random The generated number used to print the dice.
+         * @param timesPlayed An array that has the number of times every player has played.
+         * @param showSelection True if the scoreboard should prompt to select a token to move, otherwise false.
          */
         void Scoreboard(int &players, array<string, 4> &playerNames, int &current, array<ConsoleColor, 4> &playerColors, array<pair<int, int>, 4> &ranking, int &random, int timesPlayed[4], bool showSelection) {
             // The width of the board
             int boardWidth = 81;
             // The width the scoreboard can use
             int scoreboardWidth = Console::WindowWidth - boardWidth;
-            // Temporal string
+            // Auxiliary string
             string str;
 
             // Sort rankings array
@@ -124,7 +126,7 @@ namespace Game {
      * 
      * @param tokenCoords The coords in which the token should be printed.
      * @param tokenNumber The number of the token to be printed.
-     * @param playerColor An array that has the colors of each player.
+     * @param playerColor The color of the player.
      */
     void SetTokenPosition(pair<int, int> &tokenCoords, int &tokenNumber, const ConsoleColor &playerColor = ConsoleColor::Black) {
         int x = (5 * (tokenCoords.first + 1)) + 2;
@@ -139,11 +141,11 @@ namespace Game {
     }
 
     /**
-     * @brief Finds the next position corresponding to the current position of a player and assign it.
+     * @brief Finds the next position corresponding to the current position of a token and assign it.
      * 
      * @param tokenCoords The current token coords, passed as a reference.
-     * @param savedTokens The current players' saved tokens.
-     * @param selectedToken The selected player that will move.
+     * @param savedTokens An array that has the tokens a player has already saved (almost finishing).
+     * @param selectedToken The selected token that will move.
      * @param current The current player (the active player).
      * @param random The number generated randomly for the dice.
      */
@@ -184,21 +186,21 @@ namespace Game {
     /**
      * @brief Checks whether a token must go to jail again because an enemy token ocupied its position.
      * 
-     * @param playerCoords An array that has the coords of each token of an specific player.
-     * @param playersOut An array that has whether a token has already come out of jail.
-     * @param selectedPlayer The selected player that will move.
+     * @param playerTokens An array that has the coords of each token of every player.
+     * @param tokensOut An array that has whether a token has already come out of jail.
+     * @param selectedTokens The selected token that will move.
      * @param current The current turn (the active player).
      * @param players The number of players in the current game.
      * @return True if a token was sent to jail, otherwise false.
      */
-    bool SendTokenToJail(pair<int, int> playerCoords[4][4], bool playersOut[4][4], int &selectedPlayer, int &current, int &players) {
+    bool SendTokenToJail(pair<int, int> playerTokens[4][4], bool tokensOut[4][4], int &selectedTokens, int &current, int &players) {
         for (int i = 0; i < players; i++) {
             if (i != current) {
-                pair<int, int> *p = find(begin(playerCoords[i]), end(playerCoords[i]), playerCoords[current][selectedPlayer]);
-                if (p != end(playerCoords[i]) && *p == playerCoords[current][selectedPlayer]) {
-                    int d = distance(begin(playerCoords[i]), p);
-                    playerCoords[i][d] = Movements::InitialPositions[i][d];
-                    playersOut[i][d] = false;
+                pair<int, int> *p = find(begin(playerTokens[i]), end(playerTokens[i]), playerTokens[current][selectedTokens]);
+                if (p != end(playerTokens[i]) && *p == playerTokens[current][selectedTokens]) {
+                    int d = distance(begin(playerTokens[i]), p);
+                    playerTokens[i][d] = Movements::InitialPositions[i][d];
+                    tokensOut[i][d] = false;
                     return true;
                 }
             }
@@ -209,26 +211,26 @@ namespace Game {
     /**
      * @brief Calculate movements left for a token to enter the safe zone.
      * 
-     * @param playerCoords An array that has the coords of each token of an specific player.
-     * @param savedPlayers An array that has the tokens a player has already saved (almost finishing).
+     * @param tokenCoords An array that has the coords of each token of an specific player.
+     * @param savedTokens An array that has the tokens a player has already saved (almost finishing).
      * @param current The current turn (the active player).
-     * @param selectedPlayer The selected player that will move.
+     * @param selectedToken The selected token that will move.
      * @return The number of movements for a token.
      */
-    int GetMovementsLeft(pair<int, int> playerCoords[4], bool savedPlayers[4], int &current, int &selectedPlayer) {
-        if (savedPlayers[selectedPlayer]) {
+    int GetMovementsLeft(pair<int, int> tokenCoords[4], bool savedTokens[4], int &current, int &selectedToken) {
+        if (savedTokens[selectedToken]) {
             switch (current) {
             case 0:
-                return abs(Movements::FinalPositions[current].first - playerCoords[selectedPlayer].first);
+                return abs(Movements::FinalPositions[current].first - tokenCoords[selectedToken].first);
                 break;
             case 1:
-                return abs(Movements::FinalPositions[current].second - playerCoords[selectedPlayer].second);
+                return abs(Movements::FinalPositions[current].second - tokenCoords[selectedToken].second);
                 break;
             case 2:
-                return abs(Movements::FinalPositions[current].first - playerCoords[selectedPlayer].first);
+                return abs(Movements::FinalPositions[current].first - tokenCoords[selectedToken].first);
                 break;
             case 3:
-                return abs(Movements::FinalPositions[current].second - playerCoords[selectedPlayer].second);
+                return abs(Movements::FinalPositions[current].second - tokenCoords[selectedToken].second);
                 break;
             default:
                 return 0;
@@ -241,20 +243,20 @@ namespace Game {
     /**
      * @brief Calculate the number of tokens a player has available to move.
      * 
-     * @param playerCoords An array that has the coords of each token of an specific player.
-     * @param savedPlayers An array that has the tokens a player has already saved (almost finishing).
-     * @param playersOut An array that has whether a token has already come out of jail.
-     * @param playersFinished An array that has whether a token has already won.
+     * @param tokenCoords An array that has the coords of each token of an specific player.
+     * @param savedTokens An array that has the tokens a player has already saved (almost finishing).
+     * @param tokensOut An array that has whether a token has already come out of jail.
+     * @param tokensFinished An array that has whether a token has already won.
      * @param current The current turn (the active player).
      * @param random The number generated randomly for the dice.
      * @return The number of tokens a player can move.
      */
-    int GetMovableTokens(pair<int, int> playerCoords[4], bool savedPlayers[4], bool playersOut[4], bool playersFinished[4], int &current, int &random) {
+    int GetMovableTokens(pair<int, int> tokenCoords[4], bool savedTokens[4], bool tokensOut[4], bool tokensFinished[4], int &current, int &random) {
         int movable = 0;
         for (int i = 0; i < 4; i++) {
-            if (savedPlayers[i]) { if (GetMovementsLeft(playerCoords, savedPlayers, current, i) >= random) movable++; }
-            else if (random == 6 && !playersFinished[i]) movable++;
-            else if (random != 6 && playersOut[i] && !playersFinished[i]) movable++;
+            if (savedTokens[i]) { if (GetMovementsLeft(tokenCoords, savedTokens, current, i) >= random) movable++; }
+            else if (random == 6 && !tokensFinished[i]) movable++;
+            else if (random != 6 && tokensOut[i] && !tokensFinished[i]) movable++;
         }
         return movable;
     }
@@ -263,23 +265,20 @@ namespace Game {
      * @brief Main function of the game logic.
      */
     void Start() {
-        // Variables definition
-        // Two-dimension array for player coords
-        pair<int, int> playerCoords[4][4];
-        // Save active players from each player
-        bool playersOut[4][4] = { {false}, {false}, {false}, {false} };
+        // Two-dimension array for each players' tokens
+        pair<int, int> tokenCoords[4][4];
+        // Save the state of each players' tokens (if it's out or not)
+        bool tokensOut[4][4] = { {false}, {false}, {false}, {false} };
         // Array to store player names
         array<string, 4> playerNames;
-        // Current turn
-        int currentTurn = 0;
-        // Game loop
-        bool finished = false;
-        // Used to know if player came out of jail on last turn
-        bool playerCameOut = false;
+        // Current player (the active player)
+        int currentPlayer = 0;
+        // Used to know if the token of a player just came out of jail on last turn
+        bool tokenCameOut = false;
         // Should reload board
         bool reload = false;
-        // Selected player to move
-        int selectedPlayer = 0;
+        // Selected token to move
+        int selectedToken = 0;
         // Counter for 6s
         int sixCounter = 0;
         // Should render scoreboard
@@ -290,16 +289,16 @@ namespace Game {
         char key;
         // Random number for dice
         int random = 0;
-        // Number of active players
-        int activePlayers;
+        // Number of active tokens
+        int activeTokens;
         // Should skip current turn
         bool skipTurn = false;
         // Array to store rankings
-        array<pair<int, int>, 4> ranking;
-        // Save players who have won
-        bool playersFinished[4][4] = { {false}, {false}, {false}, {false} };
-        // Players in finish line (the ones that are safe)
-        bool savedPlayers[4][4] = { {false}, {false}, {false}, {false} };
+        array<pair<int, int>, 4> playerRanking;
+        // Save token state of each player (if it has finished its path or not)
+        bool tokensFinished[4][4] = { {false}, {false}, {false}, {false} };
+        // Tokens in finish line (the ones that are safe)
+        bool savedTokens[4][4] = { {false}, {false}, {false}, {false} };
         // Movements left for a player to win
         int movementsLeft;
         // Array for player colors
@@ -310,16 +309,16 @@ namespace Game {
         // Exit menu if ESC is pressed
         if (players == 0) return;
 
-        // Set initial player positions
+        // Set initial token positions
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                playerCoords[i][j] = Movements::InitialPositions[i][j];
+                tokenCoords[i][j] = Movements::InitialPositions[i][j];
             }
         }
 
         // Set initial ranking based on number of players
         for (int i = 0; i < players; i++) {
-            ranking[i] = make_pair(0, i);
+            playerRanking[i] = make_pair(0, i);
         }
 
         // Self-explanatory
@@ -330,41 +329,41 @@ namespace Game {
         Utils::ClearScreen();
         Print::Board();
 
-        // Print initial player positions
+        // Print initial token positions
         for (int i = 0; i < players; i++) {
             for (int j = 0; j < 4; j++) {
-                SetTokenPosition(playerCoords[i][j], j, playerColors[i]);
+                SetTokenPosition(tokenCoords[i][j], j, playerColors[i]);
             }
         }
 
         // Start game loop
-        while (!finished) {
-            Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random, timesPlayed, false);
+        while (true) {
+            Print::Scoreboard(players, playerNames, currentPlayer, playerColors, playerRanking, random, timesPlayed, false);
 
             do {
                 key = _getch();
             } while (!Utils::CheckIfChar(key, 32));
 
             if (Utils::CheckIfChar(key, 32)) {
-                // Pre-calculate number of active players based on playersOut array
-                activePlayers = count(begin(playersOut[currentTurn]), end(playersOut[currentTurn]), true);
+                // Pre-calculate number of active tokens based on tokens out
+                activeTokens = count(begin(tokensOut[currentPlayer]), end(tokensOut[currentPlayer]), true);
 
-                // Generate random number for current turn
+                // Generate random number for current player
                 random = Utils::GetRandomNumber(1, 6);
 
                 // Counter for times played of every player
-                timesPlayed[currentTurn]++;
+                timesPlayed[currentPlayer]++;
 
                 // Counter of 6's
                 if (random == 6) {
                     sixCounter++;
                 }
 
-                // If the player has had 3 six in a row, exit current loop
+                // If the player has had 3 six in a row, skip turn
                 if (sixCounter == 3) {
                     sixCounter = 0;
-                    currentTurn++;
-                    if (currentTurn == players) currentTurn = 0;
+                    currentPlayer++;
+                    if (currentPlayer == players) currentPlayer = 0;
                     continue;
                 }
 
@@ -373,144 +372,152 @@ namespace Game {
 
                 // Only run if player has more than 1 player on the board
                 // or player got a six and has at least 1 player on the board
-                if (GetMovableTokens(playerCoords[currentTurn], savedPlayers[currentTurn], playersOut[currentTurn], playersFinished[currentTurn], currentTurn, random) > 1) {
+                if (GetMovableTokens(tokenCoords[currentPlayer], savedTokens[currentPlayer], tokensOut[currentPlayer], tokensFinished[currentPlayer], currentPlayer, random) > 1) {
+                    // Re-render scoreboard only on first loop
                     renderScoreboard = true;
                     do {
                         do {
                             if (renderScoreboard) {
                                 renderScoreboard = false;
-                                Print::Scoreboard(players, playerNames, currentTurn, playerColors, ranking, random, timesPlayed, true);
+                                Print::Scoreboard(players, playerNames, currentPlayer, playerColors, playerRanking, random, timesPlayed, true);
                             }
                             key = _getch();
                             switch (key) {
                                 case '1':
-                                    selectedPlayer = 0;
+                                    selectedToken = 0;
                                     break;
                                 case '2':
-                                    selectedPlayer = 1;
+                                    selectedToken = 1;
                                     break;
                                 case '3':
-                                    selectedPlayer = 2;
+                                    selectedToken = 2;
                                     break;
                                 case '4':
-                                    selectedPlayer = 3;
+                                    selectedToken = 3;
                                     break;
                                 default:
-                                    selectedPlayer = -1;
+                                    selectedToken = -1;
                                     break;
                             }
-                        } while (!(selectedPlayer >= 0 && selectedPlayer <= 3));
+                        } while (!(selectedToken >= 0 && selectedToken <= 3));
 
-                        if (savedPlayers[currentTurn][selectedPlayer])
-                            movementsLeft = GetMovementsLeft(playerCoords[currentTurn], savedPlayers[currentTurn], currentTurn, selectedPlayer);
+                        // Calculate the number of movements left
+                        if (savedTokens[currentPlayer][selectedToken])
+                            movementsLeft = GetMovementsLeft(tokenCoords[currentPlayer], savedTokens[currentPlayer], currentPlayer, selectedToken);
                     
-                    } while (!((playersOut[currentTurn][selectedPlayer] && random != 6 && !savedPlayers[currentTurn][selectedPlayer]) || (random == 6 && !savedPlayers[currentTurn][selectedPlayer]) || (savedPlayers[currentTurn][selectedPlayer] && movementsLeft >= random) || (playersFinished[currentTurn][selectedPlayer] && !savedPlayers[currentTurn][selectedPlayer])));
-                } else if (activePlayers == 1) {
-                    selectedPlayer = distance(begin(playersOut[currentTurn]), find(begin(playersOut[currentTurn]), end(playersOut[currentTurn]), true));
+                    } while (!((tokensOut[currentPlayer][selectedToken] && random != 6 && !savedTokens[currentPlayer][selectedToken]) || (random == 6 && !savedTokens[currentPlayer][selectedToken]) || (savedTokens[currentPlayer][selectedToken] && movementsLeft >= random) || (tokensFinished[currentPlayer][selectedToken] && !savedTokens[currentPlayer][selectedToken])));
+                } else if (activeTokens == 1) {
+                    // Select the only active token that the player has
+                    selectedToken = distance(begin(tokensOut[currentPlayer]), find(begin(tokensOut[currentPlayer]), end(tokensOut[currentPlayer]), true));
                 } else {
-                    selectedPlayer = distance(begin(playersFinished[currentTurn]), find(begin(playersFinished[currentTurn]), end(playersFinished[currentTurn]), false));
+                    // Select the first token that hasn't already finished
+                    selectedToken = distance(begin(tokensFinished[currentPlayer]), find(begin(tokensFinished[currentPlayer]), end(tokensFinished[currentPlayer]), false));
                 }
 
-                // Set movements left if not set before
+                // Calculate the number of movements left if not set before
                 if (movementsLeft == -1)
-                    movementsLeft = GetMovementsLeft(playerCoords[currentTurn], savedPlayers[currentTurn], currentTurn, selectedPlayer);
+                    movementsLeft = GetMovementsLeft(tokenCoords[currentPlayer], savedTokens[currentPlayer], currentPlayer, selectedToken);
                 
-                // Check if a player wants to move a token to a position where has already a token of its own
-                pair<int, int> newPossibleCoords = playerCoords[currentTurn][selectedPlayer];
-                if (playersOut[currentTurn][selectedPlayer]) {
+                // Check if a player wants to move a token to a position where he has already a token of its own
+                pair<int, int> newPossibleCoords = tokenCoords[currentPlayer][selectedToken];
+                if (tokensOut[currentPlayer][selectedToken]) {
                     for (int i = 0; i < random; i++) {
-                        newPossibleCoords = GetNewCoords(newPossibleCoords, currentTurn);
+                        newPossibleCoords = GetNewCoords(newPossibleCoords, currentPlayer);
                     }
-                } else newPossibleCoords = GetNewCoords(newPossibleCoords, currentTurn);
+                } else newPossibleCoords = GetNewCoords(newPossibleCoords, currentPlayer);
                 for (int i = 0; i < 4; i++) {
-                    if (playerCoords[currentTurn][i] == newPossibleCoords && !playersFinished[currentTurn][i]) {
+                    if (tokenCoords[currentPlayer][i] == newPossibleCoords && !tokensFinished[currentPlayer][i]) {
                         skipTurn = true;
                     }
                 }
                 if (skipTurn) {
                     sixCounter = 0;
-                    currentTurn++;
-                    if (currentTurn == players) currentTurn = 0;
+                    currentPlayer++;
+                    if (currentPlayer == players) currentPlayer = 0;
                     skipTurn = false;
                     continue;
                 }
 
-                // Only run when token is in safe zone
-                if (savedPlayers[currentTurn][selectedPlayer] && activePlayers > 0 && movementsLeft >= random) {
+                // Only run when token is in safe zone (almost finishing)
+                if (savedTokens[currentPlayer][selectedToken] && activeTokens > 0 && movementsLeft >= random) {
+                    // Queue the reload
                     reload = true;
                     for (int i = 0; i < random; i++) {
-                        SetNewCoords(playerCoords[currentTurn][selectedPlayer], savedPlayers[currentTurn], selectedPlayer, currentTurn);
+                        SetNewCoords(tokenCoords[currentPlayer][selectedToken], savedTokens[currentPlayer], selectedToken, currentPlayer);
                     }
                     if (movementsLeft == random) {
-                        playersFinished[currentTurn][selectedPlayer] = true;
+                        tokensFinished[currentPlayer][selectedToken] = true;
                         for (int i = 0; i < players; i++) {
-                            if (ranking[i].second == currentTurn) {
-                                ranking[i].first = count(begin(playersFinished[currentTurn]), end(playersFinished[currentTurn]), true);
+                            if (playerRanking[i].second == currentPlayer) {
+                                playerRanking[i].first = count(begin(tokensFinished[currentPlayer]), end(tokensFinished[currentPlayer]), true);
                             }
                         }
-                        playersOut[currentTurn][selectedPlayer] = false;
+                        tokensOut[currentPlayer][selectedToken] = false;
                     }
                 }
 
-                // Only run if dice says 6
-                // Gives the player the option to take a player out of jail
-                if (random == 6 && activePlayers < 4 && !playersOut[currentTurn][selectedPlayer] && !savedPlayers[currentTurn][selectedPlayer]) {
-                    playerCameOut = true;
+                // Only run if dice got 6 and the token selected is inside of jail
+                if (random == 6 && activeTokens < 4 && !tokensOut[currentPlayer][selectedToken] && !savedTokens[currentPlayer][selectedToken]) {
+                    // Set that a token has just came out
+                    tokenCameOut = true;
+                    // Queue the reload
                     reload = true;
-                    SetNewCoords(playerCoords[currentTurn][selectedPlayer], savedPlayers[currentTurn], selectedPlayer, currentTurn);
-                    playersOut[currentTurn][selectedPlayer] = true;
-                    SendTokenToJail(playerCoords, playersOut, selectedPlayer, currentTurn, players);
+                    SetNewCoords(tokenCoords[currentPlayer][selectedToken], savedTokens[currentPlayer], selectedToken, currentPlayer);
+                    tokensOut[currentPlayer][selectedToken] = true;
+                    SendTokenToJail(tokenCoords, tokensOut, selectedToken, currentPlayer, players);
                 }
 
                 // Move the player the times the dice says and check if the new position
-                // already has another player, then send it to jail
-                // Only run if a player hasn't come out of jail in the previous turn
-                if (activePlayers > 0 && !playerCameOut && !savedPlayers[currentTurn][selectedPlayer]) {
+                // already has another player's token, then send it to jail if there is
+                // Only run if a token hasn't just come out of jail
+                if (activeTokens > 0 && !tokenCameOut && !savedTokens[currentPlayer][selectedToken]) {
+                    // Queue the reload
                     reload = true;
-                    if (Movements::SpecialMovements[currentTurn].first == playerCoords[currentTurn][selectedPlayer] && random == 6) {
-                        playersFinished[currentTurn][selectedPlayer] = true;
+                    // Check if the token is about to enter the safe zone and with a 6 can win
+                    if (Movements::SpecialMovements[currentPlayer].first == tokenCoords[currentPlayer][selectedToken] && random == 6) {
+                        tokensFinished[currentPlayer][selectedToken] = true;
                         for (int i = 0; i < players; i++) {
-                            if (ranking[i].second == currentTurn) {
-                                ranking[i].first = count(begin(playersFinished[currentTurn]), end(playersFinished[currentTurn]), true);
+                            if (playerRanking[i].second == currentPlayer) {
+                                playerRanking[i].first = count(begin(tokensFinished[currentPlayer]), end(tokensFinished[currentPlayer]), true);
                             }
                         }
-                        playersOut[currentTurn][selectedPlayer] = false;
+                        tokensOut[currentPlayer][selectedToken] = false;
                     }
                     for (int i = 0; i < random; i++) {
-                        SetNewCoords(playerCoords[currentTurn][selectedPlayer], savedPlayers[currentTurn], selectedPlayer, currentTurn);
+                        SetNewCoords(tokenCoords[currentPlayer][selectedToken], savedTokens[currentPlayer], selectedToken, currentPlayer);
                     }
-                    if (!savedPlayers[currentTurn][selectedPlayer])
-                        SendTokenToJail(playerCoords, playersOut, selectedPlayer, currentTurn, players);
+                    if (!savedTokens[currentPlayer][selectedToken])
+                        SendTokenToJail(tokenCoords, tokensOut, selectedToken, currentPlayer, players);
                 }
 
-                // Reload board only when a change has happened
+                // Reload board and token positions only when a change has been queued previously 
                 if (reload) {
                     Print::Board();
                     for (int i = 0; i < players; i++) {
                         for (int j = 0; j < 4; j++) {
-                            SetTokenPosition(playerCoords[i][j], j, playerColors[i]);
+                            SetTokenPosition(tokenCoords[i][j], j, playerColors[i]);
                         }
                     }
                 }
 
                 // Exit loop if current player won
-                if (count(begin(playersFinished[currentTurn]), end(playersFinished[currentTurn]), true) == 4) break;
+                if (count(begin(tokensFinished[currentPlayer]), end(tokensFinished[currentPlayer]), true) == 4) break;
 
                 // Change turn to next person and reset six counter
                 if (random != 6) {
                     sixCounter = 0;
-                    currentTurn++;
-                    if (currentTurn == players) currentTurn = 0;
+                    currentPlayer++;
+                    if (currentPlayer == players) currentPlayer = 0;
                 }
             }
 
             // Reset variables on every loop
-            playerCameOut = false;
-            selectedPlayer = 0;
+            tokenCameOut = false;
+            selectedToken = 0;
             reload = false;
         }
         
-        // Show winner
-        Menu::ShowWinner(playerNames[currentTurn], playerColors[currentTurn]);
+        // Show winner and then return to main menu
+        Menu::ShowWinner(playerNames[currentPlayer], playerColors[currentPlayer]);
     }
 }
