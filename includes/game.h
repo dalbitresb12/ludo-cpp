@@ -120,23 +120,19 @@ namespace Game {
     }
 
     /**
-     * Print a player based on coords and keeping original background colors from board.
+     * @brief Print a token on the board based on coords.
      * 
-     * @param playerCoords The coords in which the player should be printed.
-     * @param playerNumber The number of the player to be printed.
+     * @param tokenCoords The coords in which the token should be printed.
+     * @param tokenNumber The number of the token to be printed.
      * @param playerColor An array that has the colors of each player.
      */
-    void SetPlayerPosition(pair<int, int> &playerCoords, int &playerNumber, const ConsoleColor &playerColor = ConsoleColor::Black) {
-        int x = (5 * (playerCoords.first + 1)) + 2;
-        int y = 2 * (playerCoords.second + 1);
-        Console::BackgroundColor = Movements::BoardColors[playerCoords.second][playerCoords.first];
-        if (playerColor == Movements::BoardColors[playerCoords.second][playerCoords.first]) {
-            Console::ForegroundColor = ConsoleColor::Black;
-        } else {
-            Console::ForegroundColor = playerColor;
-        }
+    void SetTokenPosition(pair<int, int> &tokenCoords, int &tokenNumber, const ConsoleColor &playerColor = ConsoleColor::Black) {
+        int x = (5 * (tokenCoords.first + 1)) + 2;
+        int y = 2 * (tokenCoords.second + 1);
+        Console::BackgroundColor = playerColor;
+        Console::ForegroundColor = ConsoleColor::White;
         Console::SetCursorPosition(x, y);
-        cout << playerNumber + 1;
+        cout << tokenNumber + 1;
         Console::SetCursorPosition(x, y + 1);
         cout << '^';
         Console::ResetColor();
@@ -145,23 +141,44 @@ namespace Game {
     /**
      * @brief Finds the next position corresponding to the current position of a player and assign it.
      * 
-     * @param playerCoords The current player coords, passed as a reference.
-     * @param savedPlayers current players' saved players.
-     * @param selectedPlayer The selected player that will move.
-     * @param current The current turn.
+     * @param tokenCoords The current token coords, passed as a reference.
+     * @param savedTokens The current players' saved tokens.
+     * @param selectedToken The selected player that will move.
+     * @param current The current player (the active player).
+     * @param random The number generated randomly for the dice.
      */
-    void SetNewCoords(pair<int, int> &playerCoords, bool savedPlayers[4], int &selectedPlayer, int &current) {
-        if (Movements::SpecialMovements[current].first == playerCoords) {
-            playerCoords = Movements::SpecialMovements[current].second;
-            savedPlayers[selectedPlayer] = true;
+    void SetNewCoords(pair<int, int> &tokenCoords, bool savedTokens[4], int &selectedToken, int &current) {
+        if (Movements::SpecialMovements[current].first == tokenCoords) {
+            tokenCoords = Movements::SpecialMovements[current].second;
+            savedTokens[selectedToken] = true;
             return;
         }
         for (int i = 0; i < 88; i++) {
-            if (Movements::Movements[i].first == playerCoords) {
-                playerCoords = Movements::Movements[i].second;
+            if (Movements::Movements[i].first == tokenCoords) {
+                tokenCoords = Movements::Movements[i].second;
                 return;
             }
         }
+    }
+
+    /**
+     * @brief Finds the next position corresponding to the current position of a token and returns it.
+     * 
+     * @param tokenCoords The current token coords, passed as a reference.
+     * @param current The current player (the active player).
+     * @return The new position of a token.
+     */
+
+    pair<int, int> GetNewCoords(pair<int, int> &tokenCoords, int &current) {
+        if (Movements::SpecialMovements[current].first == tokenCoords) {
+            return Movements::SpecialMovements[current].second;
+        }
+        for (int i = 0; i < 88; i++) {
+            if (Movements::Movements[i].first == tokenCoords) {
+                return Movements::Movements[i].second;
+            }
+        }
+        return make_pair(0, 0);
     }
 
     /**
@@ -275,6 +292,8 @@ namespace Game {
         int random = 0;
         // Number of active players
         int activePlayers;
+        // Should skip current turn
+        bool skipTurn = false;
         // Array to store rankings
         array<pair<int, int>, 4> ranking;
         // Save players who have won
@@ -314,13 +333,13 @@ namespace Game {
         // Print initial player positions
         for (int i = 0; i < players; i++) {
             for (int j = 0; j < 4; j++) {
-                SetPlayerPosition(playerCoords[i][j], j, playerColors[i]);
+                SetTokenPosition(playerCoords[i][j], j, playerColors[i]);
             }
         }
 
         // Set possible keys a user can use during the game loop
-        const int possibleKeysSize = 1;
-        const char possibleKeys[possibleKeysSize] = {32};
+        const int possibleKeysSize = 3;
+        const char possibleKeys[possibleKeysSize] = {32, 'D', 'd'};
 
         // Start game loop
         while (!finished) {
@@ -330,13 +349,38 @@ namespace Game {
                 key = _getch();
             } while (!Utils::CheckIfInCharArray(key, possibleKeys, possibleKeysSize));
 
-            if (Utils::CheckIfChar(key, 32)) {
+            if (Utils::CheckIfChar(key, 32) || Utils::CheckIfChar(key, 'd') || Utils::CheckIfChar(key, 'D')) {
                 // Pre-calculate number of active players based on playersOut array
                 activePlayers = count(begin(playersOut[currentTurn]), end(playersOut[currentTurn]), true);
 
                 // Generate random number for current turn
-                random = Utils::GetRandomNumber(1, 6);
+                if (Utils::CheckIfChar(key, 'D') || Utils::CheckIfChar(key, 'd')) {
+                    Utils::Print::ClearLine(5, 32, 20);
+                    Console::SetCursorPosition(5, 32);
+                    cout << "waiting for key";
+                    random = (int)_getch() - 48;
+                    Utils::Print::ClearLine(5, 32, 20);
+                } else {
+                    random = Utils::GetRandomNumber(1, 6);
+                }
 
+                // Counter for times played of every player
+                timesPlayed[currentTurn]++;
+
+                // Counter of 6's
+                if (random == 6) {
+                    sixCounter++;
+                }
+
+                // If the player has had 3 six in a row, exit current loop
+                if (sixCounter == 3) {
+                    sixCounter = 0;
+                    currentTurn++;
+                    if (currentTurn == players) currentTurn = 0;
+                    continue;
+                }
+
+                // Set initial movements left on every loop
                 movementsLeft = -1;
 
                 // Only run if player has more than 1 player on the board
@@ -379,26 +423,31 @@ namespace Game {
                     selectedPlayer = distance(begin(playersFinished[currentTurn]), find(begin(playersFinished[currentTurn]), end(playersFinished[currentTurn]), false));
                 }
 
+                // Set movements left if not set before
                 if (movementsLeft == -1)
                     movementsLeft = GetMovementsLeft(playerCoords[currentTurn], savedPlayers[currentTurn], currentTurn, selectedPlayer);
-
-                // Counter for times played of every player
-                timesPlayed[currentTurn]++;
-
-                // If the player has had 3 six in a row, exit current loop
-                if (sixCounter == 3) {
+                
+                // Check if a player wants to move a token to a position where has already a token of its own
+                pair<int, int> newPossibleCoords = playerCoords[currentTurn][selectedPlayer];
+                if (playersOut[currentTurn][selectedPlayer]) {
+                    for (int i = 0; i < random; i++) {
+                        newPossibleCoords = GetNewCoords(newPossibleCoords, currentTurn);
+                    }
+                } else newPossibleCoords = GetNewCoords(newPossibleCoords, currentTurn);
+                for (int i = 0; i < 4; i++) {
+                    if (playerCoords[currentTurn][i] == newPossibleCoords && !playersFinished[currentTurn][i]) {
+                        skipTurn = true;
+                    }
+                }
+                if (skipTurn) {
                     sixCounter = 0;
                     currentTurn++;
                     if (currentTurn == players) currentTurn = 0;
+                    skipTurn = false;
                     continue;
                 }
 
-                // Counter of 6's
-                if (random == 6) {
-                    sixCounter++;
-                }
-
-                // Player enters safe zone
+                // Only run when token is in safe zone
                 if (savedPlayers[currentTurn][selectedPlayer] && activePlayers > 0 && movementsLeft >= random) {
                     reload = true;
                     for (int i = 0; i < random; i++) {
@@ -430,10 +479,20 @@ namespace Game {
                 // Only run if a player hasn't come out of jail in the previous turn
                 if (activePlayers > 0 && !playerCameOut && !savedPlayers[currentTurn][selectedPlayer]) {
                     reload = true;
+                    if (Movements::SpecialMovements[currentTurn].first == playerCoords[currentTurn][selectedPlayer] && random == 6) {
+                        playersFinished[currentTurn][selectedPlayer] = true;
+                        for (int i = 0; i < players; i++) {
+                            if (ranking[i].second == currentTurn) {
+                                ranking[i].first = count(begin(playersFinished[currentTurn]), end(playersFinished[currentTurn]), true);
+                            }
+                        }
+                        playersOut[currentTurn][selectedPlayer] = false;
+                    }
                     for (int i = 0; i < random; i++) {
                         SetNewCoords(playerCoords[currentTurn][selectedPlayer], savedPlayers[currentTurn], selectedPlayer, currentTurn);
                     }
-                    SendTokenToJail(playerCoords, playersOut, selectedPlayer, currentTurn, players);
+                    if (!savedPlayers[currentTurn][selectedPlayer])
+                        SendTokenToJail(playerCoords, playersOut, selectedPlayer, currentTurn, players);
                 }
 
                 // Reload board only when a change has happened
@@ -441,7 +500,7 @@ namespace Game {
                     Print::Board();
                     for (int i = 0; i < players; i++) {
                         for (int j = 0; j < 4; j++) {
-                            SetPlayerPosition(playerCoords[i][j], j, playerColors[i]);
+                            SetTokenPosition(playerCoords[i][j], j, playerColors[i]);
                         }
                     }
                 }
