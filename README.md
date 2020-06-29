@@ -2,6 +2,8 @@
 
 Trabajo final de fin de curso de Programación I de la carrera de Ingeniería de Software de la UPC.
 
+![Demostración del juego](assets/demo.png)
+
 ## Objetivos del trabajo 🚀
 
 - **ABET – EAC - Student Outcome 1**: La capacidad de identificar, formular y resolver problemas complejos de ingeniería mediante la aplicación de los principios de la ingeniería, la ciencia y las matemáticas.
